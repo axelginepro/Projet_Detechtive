@@ -14,8 +14,8 @@
             --primary-bg: #0a0a0a;
             --card-bg: #1a1a1a;
             --text-color: #e0e0e0;
-            --accent-color: #f1c40f; /* Jaune enquête */
-            --secondary-accent: #2ecc71; /* Vert validation */
+            --accent-color: #f1c40f;
+            --secondary-accent: #2ecc71;
             --border-color: #333;
         }
 
@@ -28,10 +28,7 @@
             padding: 20px;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         header {
             border-bottom: 2px solid var(--accent-color);
@@ -40,60 +37,51 @@
             text-align: center;
         }
 
-        h1 { 
-            margin: 0; 
-            color: var(--accent-color); 
-            text-transform: uppercase; 
-            font-size: 2.5rem; 
-            font-weight: 700; 
+        h1 {
+            margin: 0;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 2.5rem;
+            font-weight: 700;
             letter-spacing: 1px;
         }
-        
-        h2 { 
-            color: var(--accent-color); 
-            border-left: 5px solid var(--accent-color); 
-            padding-left: 15px; 
-            margin-top: 40px; 
+
+        h2 {
+            color: var(--accent-color);
+            border-left: 5px solid var(--accent-color);
+            padding-left: 15px;
+            margin-top: 40px;
             font-weight: 600;
         }
 
-        h3 { 
-            color: #fff; 
-            margin-top: 0; 
-            margin-bottom: 15px; 
-            text-decoration: underline; 
-            font-size: 1.2rem; 
+        h3 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-decoration: underline;
+            font-size: 1.2rem;
             font-weight: 600;
         }
 
-        h4 { 
-            color: var(--accent-color); 
-            margin-bottom: 5px; 
-            font-size: 1rem; 
-            text-transform: uppercase; 
+        h4 {
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            font-size: 1rem;
+            text-transform: uppercase;
             font-weight: 700;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 25px; 
+            padding: 25px;
             border: 1px solid var(--border-color);
             margin-bottom: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            border-radius: 8px; 
+            border-radius: 8px;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
         ul { list-style-type: square; padding-left: 20px; margin-top: 5px; }
         li { margin-bottom: 8px; font-size: 0.95rem; font-weight: 300; }
@@ -109,10 +97,51 @@
             margin-right: 5px;
             border-radius: 4px;
             margin-bottom: 10px;
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        /* --- STYLES IMAGES & LIGHTBOX --- */
+        .vlan-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-top: 10px;
+        }
+
+        .vlan-table th {
+            background: #222;
+            color: var(--accent-color);
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .vlan-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #2a2a2a;
+            font-weight: 300;
+            vertical-align: middle;
+        }
+
+        .vlan-table tr:hover td { background: #222; }
+
+        .trust-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .trust-low { background: rgba(231,76,60,0.2); color: #e74c3c; }
+        .trust-medium { background: rgba(230,126,34,0.2); color: #e67e22; }
+        .trust-standard { background: rgba(241,196,15,0.2); color: #f1c40f; }
+        .trust-critical { background: rgba(155,89,182,0.2); color: #9b59b6; }
+        .trust-none { background: rgba(100,100,100,0.2); color: #888; }
+
         .card-img {
             width: 100%;
             height: 180px;
@@ -124,38 +153,37 @@
             transition: transform 0.2s;
             border-radius: 4px;
         }
-        
+
         .card-img:hover {
             border-color: var(--accent-color);
             transform: scale(1.02);
         }
 
         .img-caption {
-            font-size: 0.75rem; 
-            color: #888; 
-            text-align: center; 
-            margin-bottom: 15px; 
+            font-size: 0.75rem;
+            color: #888;
+            text-align: center;
+            margin-bottom: 15px;
             font-style: italic;
         }
 
-        /* Le Modal (fond noir) */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.9); 
-            justify-content: center; 
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
             align-items: center;
             backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            max-width: 90%; 
-            max-height: 90%; 
+            max-width: 90%;
+            max-height: 90%;
             border: 2px solid var(--accent-color);
-            box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+            box-shadow: 0 0 30px rgba(241,196,15,0.2);
             border-radius: 4px;
         }
 
@@ -176,6 +204,25 @@
             border-radius: 3px;
             color: var(--secondary-accent);
         }
+
+        .rule-block {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-top: 12px;
+        }
+
+        .rule-block p {
+            margin: 4px 0;
+            font-size: 0.82rem;
+            font-family: 'Courier New', Courier, monospace;
+            color: #ccc;
+        }
+
+        .rule-block p span.allow { color: var(--secondary-accent); font-weight: 600; }
+        .rule-block p span.deny { color: #e74c3c; font-weight: 600; }
+        .rule-block p span.vlan { color: var(--accent-color); }
 
         footer {
             text-align: center;
@@ -199,44 +246,128 @@
 
 <div class="container">
     <header>
-        <h1>Detechtive Agency</h1>
-        <p>Projet de fin d'études - Certification AIS (Niveau 6)</p>
-        <p><strong>Demo Day Jedha</strong></p>
+        <h1>Projet Detechtive Agency</h1>
+        <p>Certification AIS (Niveau 6)</p>
     </header>
 
     <section>
         <h2>1. Contexte & Objectifs</h2>
         <div class="card">
-            <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : création de l'environnement réseau et intégration complète de la stack technique (Web, Data, Fichiers).</p>
+            <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : conception de l'architecture réseau sécurisée et intégration complète de la stack technique (Web, Data, Fichiers) dans une approche <strong>Secure by Design</strong>.</p>
             <ul>
-                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL) et sécurisation du stockage par cloisonnement (ACL).</li>
-                <li><strong>Disponibilité :</strong> Une architecture robuste : grâce au cloisonnement (VLAN), la panne d'un élément ne coupe pas tout le système.</li>
-                <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh) et authentification unique (AD).</li>
+                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement (ACL).</li>
+                <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau.</li>
+                <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh SIEM) depuis un VLAN Management dédié et authentification unique (Active Directory).</li>
             </ul>
         </div>
     </section>
 
     <section>
         <h2>2. Architecture Infrastructure</h2>
+
+        <div class="card">
+            <h3>Segmentation réseau — 5 zones de sécurité</h3>
+            <p style="font-size:0.88rem; color:#aaa; margin-bottom:16px;">
+                Chaque zone dispose d'un niveau de confiance distinct. pfSense applique des règles de filtrage strictes entre chaque VLAN — aucune règle "any to any".
+            </p>
+            <table class="vlan-table">
+                <thead>
+                    <tr>
+                        <th>Zone</th>
+                        <th>VLAN</th>
+                        <th>CIDR</th>
+                        <th>Services</th>
+                        <th>Confiance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>DMZ</strong></td>
+                        <td><code>10</code></td>
+                        <td><code>192.168.10.0/28</code></td>
+                        <td>Serveur Web (Apache/PHP), Webterm</td>
+                        <td><span class="trust-badge trust-low">🔴 Faible</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Serveurs Internes</strong></td>
+                        <td><code>20</code></td>
+                        <td><code>192.168.10.16/28</code></td>
+                        <td>File Server, Base de Données (MariaDB)</td>
+                        <td><span class="trust-badge trust-medium">🟠 Moyen</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Postes Clients</strong></td>
+                        <td><code>30</code></td>
+                        <td><code>192.168.10.128/25</code></td>
+                        <td>Workstations agents (Windows)</td>
+                        <td><span class="trust-badge trust-standard">🟡 Standard</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active Directory</strong></td>
+                        <td><code>40</code></td>
+                        <td><code>192.168.10.32/29</code></td>
+                        <td>SRV-AD-01, DNS</td>
+                        <td><span class="trust-badge trust-critical">🟣 Critique</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Management & Sécurité</strong></td>
+                        <td><code>50</code></td>
+                        <td><code>192.168.10.40/29</code></td>
+                        <td>SIEM Wazuh, administration</td>
+                        <td><span class="trust-badge trust-critical">🟣 Critique</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zone Externe</strong></td>
+                        <td><code>—</code></td>
+                        <td><code>WAN</code></td>
+                        <td>Kali Linux (Pentest)</td>
+                        <td><span class="trust-badge trust-none">⚫ Non fiable</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="grid">
             <div class="card">
                 <h3>Topologie GNS3</h3>
                 <img src="gns3.png" alt="Topologie GNS3" class="card-img" onclick="openModal(this.src)">
                 <div class="img-caption">Cliquez pour agrandir le schéma de câblage</div>
                 <ul>
-                    <li><strong>VLAN 10 :</strong> Zone de Management (Wazuh, Admin).</li>
-                    <li><strong>VLAN 20 :</strong> Zone Serveurs (AD, Web, Files, BDD).</li>
-                    <li><strong>VLAN 30 :</strong> Zone Utilisateurs (Workstations).</li>
+                    <li><strong>VLAN 10 (DMZ) :</strong> Serveur Web exposé, isolé du réseau interne.</li>
+                    <li><strong>VLAN 20 :</strong> File Server & BDD, jamais joignables depuis Internet.</li>
+                    <li><strong>VLAN 40 :</strong> AD isolé — inaccessible depuis la DMZ.</li>
+                    <li><strong>VLAN 50 :</strong> Wazuh collecte les logs de tous les VLANs.</li>
                 </ul>
             </div>
             <div class="card">
                 <h3>Plan d'Adressage</h3>
                 <img src="ip.png" alt="Plan IP" class="card-img" onclick="openModal(this.src)">
                 <div class="img-caption">Cliquez pour voir les plages IP et flux</div>
-                <ul>
-                    <li><strong>Segmentation :</strong> Filtrage strict par pare-feu pfSense.</li>
-                    <li><strong>Isolation :</strong> La BDD est confinée au VLAN 20. Tout accès direct depuis les VLANs 10 et 30 est bloqué.</li>
-                </ul>
+                <div class="rule-block">
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> ports 3306, 445 uniquement</p>
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 40</span> : <span class="allow">ALLOW</span> ports 389/636 uniquement</p>
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 50</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">VLAN 30</span> → <span class="vlan">VLAN 10</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">VLAN 50</span> → tous : <span class="allow">READ ONLY</span> (agents Wazuh)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 5px solid #9b59b6;">
+            <h3>Pourquoi cette segmentation ?</h3>
+            <div class="grid-3">
+                <div>
+                    <h4>Serveur Web en DMZ</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Le Web Server est le seul élément exposé à Internet. En l'isolant dans VLAN 10, une compromission n'expose ni l'AD, ni la BDD, ni les postes clients.</p>
+                </div>
+                <div>
+                    <h4>AD isolé (VLAN 40)</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">L'Active Directory est le composant le plus critique du réseau. Un attaquant qui compromet la DMZ ne peut pas atteindre l'AD — le pare-feu interne bloque tout accès non explicitement autorisé.</p>
+                </div>
+                <div>
+                    <h4>Wazuh isolé (VLAN 50)</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Le SIEM est en VLAN dédié. Même si la DMZ est compromise, l'attaquant ne peut pas désactiver la supervision ou effacer ses traces — aucun flux entrant depuis VLAN 10 vers VLAN 50 n'est autorisé.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -258,8 +389,8 @@
                     <h3>Serveur de Fichiers Sécurisé</h3>
                     <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Isolation stricte des données sensibles.</p>
                     <ul>
-                        <li><strong>Dossiers Dédiés :</strong> Chaque agent (ou équipe) dispose d'un dossier partagé personnel sur le File Server.</li>
-                        <li><strong>Permissions NTFS :</strong> Configuration des ACLs (Access Control Lists) pour que l'Agent A ne puisse techniquement <strong>ni lire ni voir</strong> le dossier de l'Agent B.</li>
+                        <li><strong>Dossiers Dédiés :</strong> Chaque agent dispose d'un dossier partagé personnel sur le File Server (VLAN 20).</li>
+                        <li><strong>Permissions NTFS :</strong> ACLs configurées pour que l'Agent A ne puisse ni lire ni voir le dossier de l'Agent B.</li>
                         <li><strong>Mappage Dynamique :</strong> Au login, seul le lecteur réseau correspondant à l'utilisateur connecté est monté.</li>
                     </ul>
                 </div>
@@ -274,37 +405,38 @@
                 <span class="tag">Apache</span>
                 <span class="tag">PHP 8.x</span>
                 <span class="tag">MariaDB</span>
-                <span class="tag">Windows Server (SMB)</span>
+                <span class="tag">Windows Server 2022</span>
+                <span class="tag">SMB</span>
             </div>
-            
+
             <div class="grid-3">
                 <div>
-                    <h4>Serveur Web (Front)</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le point d'entrée unique.</p>
+                    <h4>Serveur Web — VLAN 10</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Seul point exposé à Internet.</p>
                     <ul>
-                        <li><strong>Rôle Pivot :</strong> Il orchestre les demandes entre l'utilisateur, la BDD et le File Server.</li>
+                        <li><strong>Rôle Pivot :</strong> Orchestre les demandes entre l'utilisateur, la BDD (VLAN 20) et le File Server (VLAN 20).</li>
                         <li><strong>Sessions :</strong> Gestion stricte via <code>session_start()</code>. Redirection si non authentifié.</li>
-                        <li><strong>Sécurité :</strong> Validation des entrées (Input Sanitization) et whitelist des fichiers uploadés.</li>
+                        <li><strong>Sécurité :</strong> Validation des entrées et whitelist des fichiers uploadés.</li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4>Base de Données</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le coffre-fort des métadonnées.</p>
+                    <h4>Base de Données — VLAN 20</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Inaccessible depuis Internet.</p>
                     <ul>
                         <li><strong>Connexion SSL :</strong> Le client PHP utilise un certificat CA pour valider l'identité du serveur MariaDB.</li>
-                        <li><strong>Isolation :</strong> Hébergée sur une VM dédiée (192.168.10.18), inaccessible du public.</li>
-                        <li><strong>Failover :</strong> Code PHP avec <code>try/catch</code> pour basculer en mode dégradé si le SSL échoue.</li>
+                        <li><strong>Isolation :</strong> VM dédiée en VLAN 20 — aucun accès direct depuis VLAN 10 hors port 3306.</li>
+                        <li><strong>Failover :</strong> <code>try/catch</code> PHP pour basculer en mode dégradé si SSL échoue.</li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4>File Server (SMB)</h4>
+                    <h4>File Server — VLAN 20</h4>
                     <p style="font-size:0.85rem; color:#aaa;">Stockage des preuves.</p>
                     <ul>
-                        <li><strong>Protocole :</strong> Partage Windows (SMB) monté dynamiquement.</li>
-                        <li><strong>Bridge PHP :</strong> L'application utilise la commande <code>net use</code> pour monter le lecteur réseau à la demande.</li>
-                        <li><strong>Permissions :</strong> Utilisation d'un compte de service AD spécifique (Least Privilege) pour l'écriture.</li>
+                        <li><strong>Protocole :</strong> Partage Windows (SMB) monté dynamiquement depuis VLAN 10.</li>
+                        <li><strong>Bridge PHP :</strong> Commande <code>net use</code> pour monter le lecteur réseau à la demande.</li>
+                        <li><strong>Permissions :</strong> Compte de service AD dédié (Least Privilege) pour l'écriture uniquement.</li>
                     </ul>
                 </div>
             </div>
@@ -319,15 +451,15 @@
                 <ul>
                     <li><strong>Anti-SQLi :</strong> Usage exclusif de <strong>PDO</strong> et des requêtes préparées.</li>
                     <li><strong>Anti-RCE :</strong> Renommage forcé des fichiers uploadés (<code>preg_replace</code>) pour éviter l'exécution de scripts.</li>
-                    <li><strong>Feedback :</strong> Indicateur visuel "Cadenas Vert/Rouge" informant l'agent de l'état du chiffrement.</li>
+                    <li><strong>Feedback :</strong> Indicateur visuel "Cadenas Vert/Rouge" informant l'agent de l'état du chiffrement SSL.</li>
                 </ul>
             </div>
             <div class="card" style="border-left: 5px solid #e74c3c;">
                 <h3>Sécurité Infrastructure</h3>
                 <ul>
-                    <li><strong>Pare-feu :</strong> pfSense filtre tout trafic non légitime entre les VLANs.</li>
-                    <li><strong>SIEM :</strong> Wazuh remonte les alertes de sécurité en temps réel.</li>
-                    <li><strong>Hardening :</strong> Désactivation des services inutiles et principe du moindre privilège.</li>
+                    <li><strong>Pare-feu pfSense :</strong> 5 VLANs isolés, règles whitelist strictes par port/service.</li>
+                    <li><strong>SIEM Wazuh :</strong> Remontée d'alertes en temps réel depuis un VLAN Management dédié (VLAN 50), inaccessible depuis la DMZ.</li>
+                    <li><strong>Hardening :</strong> Désactivation des services inutiles et principe du moindre privilège appliqué sur tous les comptes.</li>
                 </ul>
             </div>
         </div>
