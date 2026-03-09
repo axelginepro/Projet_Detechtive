@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Sécurité & Données - Detechtive Agency</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --code-bg: #282c34;
+            --code-text: #abb2bf;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        h1 { color: var(--primary-color); text-transform: uppercase; letter-spacing: 2px; }
+        h2 { color: var(--secondary-color); border-left: 5px solid var(--accent-color); padding-left: 10px; margin-top: 40px; }
+        h3 { color: var(--accent-color); margin-top: 25px; }
+
+        /* Tables Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover { background-color: #f1f1f1; }
+
+        /* Code Blocks Styling */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        code { font-family: inherit; }
+        
+        .xml-tag { color: #e06c75; }
+        .xml-attr { color: #d19a66; }
+        .xml-val { color: #98c379; }
+        .comment { color: #5c6370; font-style: italic; }
+
+        /* Status Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+        }
+        .status-opened { background-color: #27ae60; }
+        .status-freezed { background-color: #f39c12; }
+        .status-closed { background-color: #c0392b; }
+        
+        .level-crit { background-color: #c0392b; } /* Level 15 */
+        .level-high { background-color: #e67e22; } /* Level 12-14 */
+        .level-med { background-color: #f1c40f; color: #333; } /* Level 10 */
+
+        .section-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Dossier de Sécurité & Base de Données</h1>
+        <p>Agence Detechtive - Configuration Wazuh & Registre des Agents</p>
+    </header>
+
+    <div class="section-card">
+        <h2>1. Base de Données (Registre)</h2>
+
+        <h3>Table AGENTS</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code Agent</th>
+                    <th>Nom</th>
+                    <th>Mot de passe</th>
+                    <th>Team ID</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Eclair</td><td>Sebastien DEMEY</td><td>arcraiddersGEEKos</td><td>1</td><td>+33 3 46 70 98 02</td></tr>
+                <tr><td>Elmusico</td><td>Alexandre ESTRABAUD</td><td>rammstein4ever</td><td>3</td><td>+33 3 12 05 92 07</td></tr>
+                <tr><td>QWERTY4GNS</td><td>Axel GINEPRO</td><td>jaimelalingerie</td><td>2</td><td>+33 3 10 04 82 04</td></tr>
+                <tr><td>WaffleMan</td><td>Valentin SCHELLENS</td><td>brusselsansX</td><td>1</td><td>+32 1 17 55 42 97</td></tr>
+                <tr><td>Soldelavie</td><td>Solène BRANLY</td><td>cestchaudlahaut</td><td>2</td><td>+33 2 87 50 29 19</td></tr>
+                <tr><td>NoFitness</td><td>Audrey FERRERE</td><td>Vivelamuscu</td><td>3</td><td>+32 5 27 85 12 97</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Table INVESTIGATIONS</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Date Création</th>
+                    <th>Client ID</th>
+                    <th>Team ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>001</td>
+                    <td>Vol de pâtisserie</td>
+                    <td>Monsieur S se fait voler des éclairs au chocolat.</td>
+                    <td><span class="badge status-opened">Opened</span></td>
+                    <td>20240810</td>
+                    <td>02</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>La conception secrète</td>
+                    <td>Vol de patron de lingerie en peau d'alligator.</td>
+                    <td><span class="badge status-freezed">Freezed</span></td>
+                    <td>20201029</td>
+                    <td>01</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>Le divorce à 1 million</td>
+                    <td>Preuves compromettantes pour divorce.</td>
+                    <td><span class="badge status-closed">Closed</span></td>
+                    <td>20260103</td>
+                    <td>03</td>
+                    <td>3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Configuration Wazuh (Règles XML)</h2>
+        <p>Emplacement recommandé : <code>/var/ossec/etc/rules/local_rules.xml</code></p>
+
+        <h3>Active Directory & Windows Security</h3>
+        <pre><code>&lt;group name="windows,ad,security"&gt;
+
+  <span class="comment">&lt;!-- Ajout à Domain Admins --&gt;</span>
+  &lt;rule id="100100" level="15"&gt;
+    &lt;if_sid&gt;60103&lt;/if_sid&gt;
+    &lt;field name="win.eventdata.TargetUserName"&gt;Domain Admins&lt;/field&gt;
+    &lt;description&gt;CRITICAL - User added to Domain Admins&lt;/description&gt;
+    &lt;mitre&gt;T1098&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- DCSync Attack --&gt;</span>
+  &lt;rule id="100101" level="15"&gt;
+    &lt;if_sid&gt;60102&lt;/if_sid&gt;
+    &lt;match&gt;Replicating Directory Changes&lt;/match&gt;
+    &lt;description&gt;CRITICAL - Possible DCSync attack&lt;/description&gt;
+    &lt;mitre&gt;T1003&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- Ajout groupe sensible --&gt;</span>
+  &lt;rule id="100102" level="15"&gt;
+    &lt;if_sid&gt;60103&lt;/if_sid&gt;
+    &lt;regex type="pcre2"&gt;TargetUserName=(Administrators)&lt;/regex&gt;
+    &lt;description&gt;CRITICAL - Utilisateur ajouté à un groupe AD sensible&lt;/description&gt;
+    &lt;mitre&gt;T1098&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;
+
+&lt;group name="windows,workstation,attack"&gt;
+
+  <span class="comment">&lt;!-- Dump LSASS --&gt;</span>
+  &lt;rule id="100200" level="15"&gt;
+    &lt;if_sid&gt;61612&lt;/if_sid&gt;
+    &lt;field name="win.eventdata.TargetImage"&gt;C:\\Windows\\System32\\lsass.exe&lt;/field&gt;
+    &lt;description&gt;CRITICAL - Accès suspect au processus LSASS (Tentative de Dump)&lt;/description&gt;
+    &lt;mitre&gt;T1003&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- Outils Hacking via LSASS --&gt;</span>
+  &lt;rule id="100201" level="15"&gt;
+    &lt;if_sid&gt;61612&lt;/if_sid&gt;
+    &lt;field name="win.eventdata.TargetImage"&gt;C:\\Windows\\System32\\lsass.exe&lt;/field&gt;
+    &lt;regex type="pcre2"&gt;ParentImage=(?:.*\\cmd\.exe|.*\\powershell\.exe|.*\\wscript\.exe)&lt;/regex&gt;
+    &lt;description&gt;CRITICAL - Accès suspect à LSASS depuis un processus parent inhabituel&lt;/description&gt;
+    &lt;mitre&gt;T1003&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;</code></pre>
+
+        <h3>Base de Données (SQL Security)</h3>
+        <pre><code>&lt;group name="database,security"&gt;
+
+  <span class="comment">&lt;!-- Dump SQL --&gt;</span>
+  &lt;rule id="100400" level="14"&gt;
+    &lt;match&gt;mysqldump|pg_dump|BACKUP DATABASE&lt;/match&gt;
+    &lt;description&gt;HIGH - Export de la base de données détecté (Dump)&lt;/description&gt;
+    &lt;mitre&gt;T1005&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- Brute Force DB --&gt;</span>
+  &lt;rule id="100401" level="12" frequency="5" timeframe="120"&gt;
+    &lt;if_matched_sid&gt;501&lt;/if_matched_sid&gt;
+    &lt;description&gt;HIGH - Attaque Brute Force sur la Database&lt;/description&gt;
+    &lt;mitre&gt;T1110&lt;/mitre&gt;
+  &lt;/rule&gt;
+  
+  <span class="comment">&lt;!-- Exfiltration SQL --&gt;</span>
+  &lt;rule id="100403" level="14"&gt;
+    &lt;match&gt;LOAD_FILE|INTO OUTFILE|INTO DUMPFILE|UNION SELECT&lt;/match&gt;
+    &lt;description&gt;HIGH - Requête SQL dangereuse détectée (exfiltration possible)&lt;/description&gt;
+    &lt;mitre&gt;T1190&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;</code></pre>
+
+        <h3>File Server (Ransomware) & Web Server</h3>
+        <pre><code>&lt;group name="windows,fileserver,ransomware"&gt;
+
+  <span class="comment">&lt;!-- Suppression Shadow Copies --&gt;</span>
+  &lt;rule id="100300" level="15"&gt;
+    &lt;match&gt;vssadmin delete shadows|wmic shadowcopy delete&lt;/match&gt;
+    &lt;description&gt;CRITICAL - Suppression des Shadow Copies (Comportement Ransomware)&lt;/description&gt;
+    &lt;mitre&gt;T1490&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- Suppression Massive --&gt;</span>
+  &lt;rule id="100301" level="13" frequency="10" timeframe="60"&gt;
+    &lt;match&gt;del /s|Remove-Item&lt;/match&gt;
+    &lt;description&gt;HIGH - Suppression massive de fichiers détectée&lt;/description&gt;
+    &lt;mitre&gt;T1485&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;
+
+&lt;group name="web,attack"&gt;
+
+  <span class="comment">&lt;!-- Webshell --&gt;</span>
+  &lt;rule id="100500" level="15"&gt;
+    &lt;match&gt;cmd.exe|powershell.exe|/bin/bash|/bin/sh&lt;/match&gt;
+    &lt;description&gt;CRITICAL - Webshell suspect détecté sur le serveur Web&lt;/description&gt;
+    &lt;mitre&gt;T1505&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- SQL Injection --&gt;</span>
+  &lt;rule id="100501" level="12"&gt;
+    &lt;match&gt;union select|or 1=1|sleep\(|xp_cmdshell&lt;/match&gt;
+    &lt;description&gt;HIGH - Tentative d'Injection SQL détectée&lt;/description&gt;
+    &lt;mitre&gt;T1190&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;</code></pre>
+
+        <h3>Réseau (PfSense & Latéralisation)</h3>
+        <pre><code>&lt;group name="network,pfsense"&gt;
+
+  <span class="comment">&lt;!-- Mouvement Latéral (Kali vers VLAN 10) --&gt;</span>
+  &lt;rule id="100601" level="12"&gt;
+    &lt;if_sid&gt;60000&lt;/if_sid&gt;
+    &lt;match&gt;BLOCK&lt;/match&gt;
+    &lt;field name="source.ip"&gt;IP_KALI&lt;/field&gt;
+    &lt;field name="destination.vlan"&gt;10&lt;/field&gt;
+    &lt;description&gt;HIGH - Trafic bloqué de Kali vers le VLAN Serveurs (VLAN 10)&lt;/description&gt;
+    &lt;mitre&gt;T1048&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+  <span class="comment">&lt;!-- Scan de Ports --&gt;</span>
+  &lt;rule id="100602" level="10" frequency="20" timeframe="60"&gt;
+    &lt;match&gt;portscan|SYN Scan|Nmap&lt;/match&gt;
+    &lt;description&gt;MEDIUM - Scan de ports détecté sur le réseau&lt;/description&gt;
+    &lt;mitre&gt;T1046&lt;/mitre&gt;
+  &lt;/rule&gt;
+  
+  <span class="comment">&lt;!-- Brute Force Interface PfSense --&gt;</span>
+  &lt;rule id="100700" level="12" frequency="5" timeframe="120"&gt;
+    &lt;if_matched_sid&gt;5402&lt;/if_matched_sid&gt;
+    &lt;match&gt;webConfigurator authentication error&lt;/match&gt;
+    &lt;description&gt;Detechtive : Tentative de Brute Force détectée sur l'interface de gestion PfSense&lt;/description&gt;
+    &lt;mitre&gt;T1110&lt;/mitre&gt;
+  &lt;/rule&gt;
+
+&lt;/group&gt;</code></pre>
+    </div>
+
+    <div class="section-card">
+        <h2>3. File Integrity Monitoring (FIM)</h2>
+        <p>Configuration pour surveiller les fichiers critiques sans surcharger le système.</p>
+        <pre><code>&lt;syscheck&gt;
+  &lt;directories realtime="yes" check_all="yes"&gt;C:\Windows\System32\drivers\etc&lt;/directories&gt; 
+  &lt;directories realtime="yes" check_all="yes"&gt;C:\Windows\System32\config\&lt;/directories&gt;
+  &lt;directories realtime="yes" check_all="yes"&gt;C:\inetpub\&lt;/directories&gt;
+  
+  &lt;!-- Ignorer les fichiers temporaires --&gt;
+  &lt;ignore type="sregex"&gt;\.tmp$|\.log$|\.bak$&lt;/ignore&gt;
+&lt;/syscheck&gt;</code></pre>
+    </div>
+
+    <div class="section-card">
+        <h2>4. Active Response (Blocage Automatique)</h2>
+        
+        <h3>Script de blocage (Sur PfSense)</h3>
+        <p>Sauvegarder sous <code>block_ip.sh</code></p>
+        <pre><code>#!/bin/bash
+LOCAL=`dirname $0`
+IP=$1
+
+# Envoi d'une commande à PfSense pour bloquer l'IP
+ssh admin@IP_PFSENSE "pfctl -t blocked_ips -T add $IP"
+logger -t wazuh "IP bloquée par Active Response : $IP"</code></pre>
+
+        <h3>Configuration <code>ossec.conf</code></h3>
+        
+        <h4>1. Déclaration de la commande</h4>
+        <pre><code>&lt;command&gt;
+  &lt;name&gt;block_ip&lt;/name&gt;
+  &lt;executable&gt;/var/ossec/active-response/bin/block_ip.sh&lt;/executable&gt;
+  &lt;timeout_allowed&gt;yes&lt;/timeout_allowed&gt;
+&lt;/command&gt;</code></pre>
+
+        <h4>2. Règles de déclenchement (Triggers)</h4>
+        
+        <strong>Blocage SSH (Brute Force)</strong>
+        <pre><code>&lt;active-response&gt;
+  &lt;command&gt;block_ip&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;100700&lt;/rules_id&gt;
+  &lt;timeout&gt;600&lt;/timeout&gt; <span class="comment">&lt;!-- 10 minutes --&gt;</span>
+&lt;/active-response&gt;</code></pre>
+
+        <strong>Blocage Database (Brute Force)</strong>
+        <pre><code>&lt;active-response&gt;
+  &lt;command&gt;block_ip&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;100701&lt;/rules_id&gt;
+  &lt;timeout&gt;1800&lt;/timeout&gt; <span class="comment">&lt;!-- 30 minutes --&gt;</span>
+&lt;/active-response&gt;</code></pre>
+
+        <strong>Blocage Ransomware (Suppression massive)</strong>
+        <pre><code>&lt;active-response&gt;
+  &lt;command&gt;block_ip&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;100702&lt;/rules_id&gt;
+  &lt;timeout&gt;3600&lt;/timeout&gt; <span class="comment">&lt;!-- 1 heure --&gt;</span>
+&lt;/active-response&gt;</code></pre>
+
+        <strong>Blocage Scan de Ports (Reconnaissance)</strong>
+        <pre><code>&lt;active-response&gt;
+  &lt;command&gt;block_ip&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;100703&lt;/rules_id&gt;
+  &lt;timeout&gt;3600&lt;/timeout&gt;
+&lt;/active-response&gt;</code></pre>
+
+        <strong>Isolation machine (Vol LSASS / Webshell)</strong>
+        <p><em>Note : Timeout à 0 signifie un blocage permanent jusqu'à intervention manuelle.</em></p>
+        <pre><code>&lt;active-response&gt;
+  &lt;command&gt;block_ip&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;100200, 100704&lt;/rules_id&gt; 
+  &lt;timeout&gt;0&lt;/timeout&gt; 
+&lt;/active-response&gt;</code></pre>
+    </div>
+
+</div>
+
+</body>
+</html>

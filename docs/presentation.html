@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soutenance Projet - Detechtive Agency</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --accent-color: #f1c40f; /* Jaune enquête */
+            --secondary-accent: #2ecc71; /* Vert validation */
+            --border-color: #333;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 { 
+            margin: 0; 
+            color: var(--accent-color); 
+            text-transform: uppercase; 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+        }
+        
+        h2 { 
+            color: var(--accent-color); 
+            border-left: 5px solid var(--accent-color); 
+            padding-left: 15px; 
+            margin-top: 40px; 
+            font-weight: 600;
+        }
+
+        h3 { 
+            color: #fff; 
+            margin-top: 0; 
+            margin-bottom: 15px; 
+            text-decoration: underline; 
+            font-size: 1.2rem; 
+            font-weight: 600;
+        }
+
+        h4 { 
+            color: var(--accent-color); 
+            margin-bottom: 5px; 
+            font-size: 1rem; 
+            text-transform: uppercase; 
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px; 
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border-radius: 8px; 
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        ul { list-style-type: square; padding-left: 20px; margin-top: 5px; }
+        li { margin-bottom: 8px; font-size: 0.95rem; font-weight: 300; }
+        strong { font-weight: 600; color: #fff; }
+
+        .tag {
+            display: inline-block;
+            background: #333;
+            color: var(--accent-color);
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 5px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', Courier, monospace; 
+        }
+
+        /* --- STYLES IMAGES & LIGHTBOX --- */
+        .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            background: #000;
+            border: 1px solid #333;
+            margin-bottom: 10px;
+            cursor: zoom-in;
+            transition: transform 0.2s;
+            border-radius: 4px;
+        }
+        
+        .card-img:hover {
+            border-color: var(--accent-color);
+            transform: scale(1.02);
+        }
+
+        .img-caption {
+            font-size: 0.75rem; 
+            color: #888; 
+            text-align: center; 
+            margin-bottom: 15px; 
+            font-style: italic;
+        }
+
+        /* Le Modal (fond noir) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.9); 
+            justify-content: center; 
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            max-width: 90%; 
+            max-height: 90%; 
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.2);
+            border-radius: 4px;
+        }
+
+        .close-hint {
+            position: absolute;
+            bottom: 30px;
+            color: #fff;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: #222;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: var(--secondary-accent);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        @media (max-width: 900px) {
+            .grid, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="imgModal" class="modal" onclick="closeModal()">
+    <img class="modal-content" id="modalImg">
+    <div class="close-hint">[ Cliquer pour fermer ]</div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>Detechtive Agency</h1>
+        <p>Projet de fin d'études - Certification AIS (Niveau 6)</p>
+        <p><strong>Demo Day Jedha</strong></p>
+    </header>
+
+    <section>
+        <h2>1. Contexte & Objectifs</h2>
+        <div class="card">
+            <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : création de l'environnement réseau et intégration complète de la stack technique (Web, Data, Fichiers).</p>
+            <ul>
+                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL) et sécurisation du stockage par cloisonnement (ACL).</li>
+                <li><strong>Disponibilité :</strong> Une architecture robuste : grâce au cloisonnement (VLAN), la panne d'un élément ne coupe pas tout le système.</li>
+                <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh) et authentification unique (AD).</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>2. Architecture Infrastructure</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Topologie GNS3</h3>
+                <img src="gns3.png" alt="Topologie GNS3" class="card-img" onclick="openModal(this.src)">
+                <div class="img-caption">Cliquez pour agrandir le schéma de câblage</div>
+                <ul>
+                    <li><strong>VLAN 10 :</strong> Zone de Management (Wazuh, Admin).</li>
+                    <li><strong>VLAN 20 :</strong> Zone Serveurs (AD, Web, Files, BDD).</li>
+                    <li><strong>VLAN 30 :</strong> Zone Utilisateurs (Workstations).</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Plan d'Adressage</h3>
+                <img src="ip.png" alt="Plan IP" class="card-img" onclick="openModal(this.src)">
+                <div class="img-caption">Cliquez pour voir les plages IP et flux</div>
+                <ul>
+                    <li><strong>Segmentation :</strong> Filtrage strict par pare-feu pfSense.</li>
+                    <li><strong>Isolation :</strong> La BDD est confinée au VLAN 20. Tout accès direct depuis les VLANs 10 et 30 est bloqué.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. Gestion des Identités (Active Directory)</h2>
+        <div class="card">
+            <div class="grid">
+                <div>
+                    <h3>Moindre Privilège (Least Privilege)</h3>
+                    <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Le principe fondamental de sécurité appliqué au projet.</p>
+                    <ul>
+                        <li><strong>Structure AD :</strong> Organisation par Unités d'Organisation (OU) pour séparer les Agents des Administrateurs.</li>
+                        <li><strong>Droits Restreints :</strong> Les utilisateurs standard n'ont aucun droit d'administration sur les serveurs ou les postes de travail.</li>
+                        <li><strong>Comptes de Service :</strong> L'application Web utilise un compte AD dédié avec des droits minimaux, uniquement capable d'écrire dans les dossiers de dépôt.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Serveur de Fichiers Sécurisé</h3>
+                    <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Isolation stricte des données sensibles.</p>
+                    <ul>
+                        <li><strong>Dossiers Dédiés :</strong> Chaque agent (ou équipe) dispose d'un dossier partagé personnel sur le File Server.</li>
+                        <li><strong>Permissions NTFS :</strong> Configuration des ACLs (Access Control Lists) pour que l'Agent A ne puisse techniquement <strong>ni lire ni voir</strong> le dossier de l'Agent B.</li>
+                        <li><strong>Mappage Dynamique :</strong> Au login, seul le lecteur réseau correspondant à l'utilisateur connecté est monté.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Développement & Backend (Détail)</h2>
+        <div class="card">
+            <div style="margin-bottom: 20px; text-align: center;">
+                <span class="tag">Apache</span>
+                <span class="tag">PHP 8.x</span>
+                <span class="tag">MariaDB</span>
+                <span class="tag">Windows Server (SMB)</span>
+            </div>
+            
+            <div class="grid-3">
+                <div>
+                    <h4>Serveur Web (Front)</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Le point d'entrée unique.</p>
+                    <ul>
+                        <li><strong>Rôle Pivot :</strong> Il orchestre les demandes entre l'utilisateur, la BDD et le File Server.</li>
+                        <li><strong>Sessions :</strong> Gestion stricte via <code>session_start()</code>. Redirection si non authentifié.</li>
+                        <li><strong>Sécurité :</strong> Validation des entrées (Input Sanitization) et whitelist des fichiers uploadés.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>Base de Données</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Le coffre-fort des métadonnées.</p>
+                    <ul>
+                        <li><strong>Connexion SSL :</strong> Le client PHP utilise un certificat CA pour valider l'identité du serveur MariaDB.</li>
+                        <li><strong>Isolation :</strong> Hébergée sur une VM dédiée (192.168.10.18), inaccessible du public.</li>
+                        <li><strong>Failover :</strong> Code PHP avec <code>try/catch</code> pour basculer en mode dégradé si le SSL échoue.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4>File Server (SMB)</h4>
+                    <p style="font-size:0.85rem; color:#aaa;">Stockage des preuves.</p>
+                    <ul>
+                        <li><strong>Protocole :</strong> Partage Windows (SMB) monté dynamiquement.</li>
+                        <li><strong>Bridge PHP :</strong> L'application utilise la commande <code>net use</code> pour monter le lecteur réseau à la demande.</li>
+                        <li><strong>Permissions :</strong> Utilisation d'un compte de service AD spécifique (Least Privilege) pour l'écriture.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>5. Sécurité Applicative (DevSecOps)</h2>
+        <div class="grid">
+            <div class="card" style="border-left: 5px solid #2ecc71;">
+                <h3>Protection du Code</h3>
+                <ul>
+                    <li><strong>Anti-SQLi :</strong> Usage exclusif de <strong>PDO</strong> et des requêtes préparées.</li>
+                    <li><strong>Anti-RCE :</strong> Renommage forcé des fichiers uploadés (<code>preg_replace</code>) pour éviter l'exécution de scripts.</li>
+                    <li><strong>Feedback :</strong> Indicateur visuel "Cadenas Vert/Rouge" informant l'agent de l'état du chiffrement.</li>
+                </ul>
+            </div>
+            <div class="card" style="border-left: 5px solid #e74c3c;">
+                <h3>Sécurité Infrastructure</h3>
+                <ul>
+                    <li><strong>Pare-feu :</strong> pfSense filtre tout trafic non légitime entre les VLANs.</li>
+                    <li><strong>SIEM :</strong> Wazuh remonte les alertes de sécurité en temps réel.</li>
+                    <li><strong>Hardening :</strong> Désactivation des services inutiles et principe du moindre privilège.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>6. Gestion de Projet</h2>
+        <div class="card">
+            <ul>
+                <li><strong>Planification :</strong> Méthode Kanban sur <strong>Trello</strong>.</li>
+                <li><strong>Design :</strong> Schématisation sur <strong>Excalidraw</strong>.</li>
+                <li><strong>Versionning :</strong> Code source sur <strong>GitHub</strong> (Repository privé).</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Detechtive Agency - Demo Day Jedha - Certification AIS</p>
+    </footer>
+</div>
+
+<script>
+    function openModal(src) {
+        var modal = document.getElementById("imgModal");
+        var modalImg = document.getElementById("modalImg");
+        modal.style.display = "flex";
+        modalImg.src = src;
+    }
+
+    function closeModal() {
+        document.getElementById("imgModal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>

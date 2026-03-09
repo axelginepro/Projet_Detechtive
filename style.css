@@ -1,0 +1,123 @@
+:root {
+    --primary-color: #0a0a0a;
+    --accent-color: #f1c40f; /* Jaune enquête */
+    --text-color: #e0e0e0;
+    --card-bg: #1a1a1a;
+    --border-color: #333;
+    --error-color: #e74c3c; /* Rouge erreur */
+}
+
+body {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    
+    /* --- CORRECTION FLEXBOX POUR LE FOOTER --- */
+    display: flex;
+    flex-direction: column; /* Important : On empile verticalement */
+    min-height: 100vh;      /* Force la hauteur min à 100% de l'écran */
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    background: var(--card-bg);
+    padding: 30px;
+    border-top: 5px solid var(--accent-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    
+    /* --- CENTRAGE DE LA CARTE --- */
+    margin: auto; /* L'astuce magique : centre la carte et laisse de la place au footer */
+}
+
+/* --- AJOUT DU STYLE DU FOOTER --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8rem;
+    color: #666;
+    width: 100%;
+    background-color: #000; /* Fond noir pour bien le séparer */
+    box-sizing: border-box; /* Pour éviter que le padding n'élargisse la page */
+}
+
+h1, h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+/* Formulaires */
+input[type="text"], input[type="password"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #222;
+    border: 1px solid var(--border-color);
+    color: white;
+    box-sizing: border-box; /* Empêche les champs de dépasser du cadre */
+}
+
+button {
+    background: var(--accent-color);
+    color: black;
+    border: none;
+    padding: 12px 25px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.3s; /* Animation douce au survol */
+}
+
+button:hover {
+    background: #d4ac0d;
+}
+
+/* Liste des missions */
+.mission-card {
+    background: #252525;
+    border-left: 3px solid var(--accent-color);
+    padding: 15px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-badge {
+    background: #333;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    color: var(--accent-color);
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* --- NOUVEAU : STYLE DES MESSAGES D'ERREUR --- */
+.alert-error {
+    background-color: rgba(231, 76, 60, 0.15); /* Rouge transparent */
+    border: 1px solid var(--error-color);
+    border-left: 5px solid var(--error-color);
+    color: #ff6b6b;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Animation de tremblement */
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}

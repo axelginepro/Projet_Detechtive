@@ -1,0 +1,90 @@
+configure terminal
+
+vlan 10
+name ADMIN
+exit
+
+vlan 20
+name SERVERS
+exit
+
+vlan 30
+name WORKSTATIONS
+exit
+
+vlan 999
+name UNUSED
+exit
+
+! INTERFACE TO PFSENSE
+interface ethernet 0/0
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30
+no shutdown
+exit
+
+! INTERFACE TO WEBTERM
+interface ethernet 0/1
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+
+! INTERFACE TO WEBSERVER
+interface ethernet 0/2
+switchport mode access
+switchport access vlan 20
+no shutdown
+exit
+
+! INTERFACE TO AD DC
+interface ethernet 0/3
+switchport mode access
+switchport access vlan 20
+no shutdown
+exit
+
+! INTERFACE TO FILESERVER
+interface ethernet 1/0
+switchport mode access
+switchport access vlan 20
+no shutdown
+exit
+
+! INTERFACE TO DATABASE
+interface ethernet 1/1
+switchport mode access
+switchport access vlan 20
+no shutdown
+exit
+
+! INTERFACE TO WORKSTATION
+interface ethernet 1/2
+switchport mode access
+switchport access vlan 30
+no shutdown
+exit
+
+! INTERFACE TO WAZUH
+interface ethernet 1/3
+switchport mode access
+switchport access vlan 10
+no shutdown
+exit
+
+! INTERFACE TO KALI
+interface ethernet 3/3
+switchport mode access
+switchport access vlan 30
+no shutdown
+exit
+
+! CLOSE OTHER INTERFACES
+interface range ethernet 2/0 - 3, ethernet 3/0 - 2
+switchport mode access
+switchport access vlan 999
+shutdown
+exit
+
+exit
+wr 
