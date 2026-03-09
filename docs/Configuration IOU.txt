@@ -1,90 +1,111 @@
 configure terminal
 
 vlan 10
-name ADMIN
+ name DMZ
 exit
 
 vlan 20
-name SERVERS
+ name SERVERS
 exit
 
 vlan 30
-name WORKSTATIONS
+ name WORKSTATIONS
+exit
+
+vlan 40
+ name ACTIVE_DIRECTORY
+exit
+
+vlan 50
+ name MGMT_SECURITY
 exit
 
 vlan 999
-name UNUSED
+ name UNUSED
 exit
 
-! INTERFACE TO PFSENSE
+! ---------- TRUNK VERS PFSENSE ----------
 interface ethernet 0/0
-switchport mode trunk
-switchport trunk allowed vlan 10,20,30
-no shutdown
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50
+ no shutdown
 exit
 
-! INTERFACE TO WEBTERM
+! ---------- DMZ ----------
+! WEBTERM
 interface ethernet 0/1
-switchport mode access
-switchport access vlan 10
-no shutdown
+ switchport mode access
+ switchport access vlan 10
+ no shutdown
 exit
 
-! INTERFACE TO WEBSERVER
+! WEBSERVER
 interface ethernet 0/2
-switchport mode access
-switchport access vlan 20
-no shutdown
+ switchport mode access
+ switchport access vlan 10
+ ! ou 20 si tu préfères web en SERVERS, adapte selon ta topo
+ no shutdown
 exit
 
-! INTERFACE TO AD DC
+! ---------- ACTIVE DIRECTORY ----------
+! AD DC (SRV-AD01, DNS)
 interface ethernet 0/3
-switchport mode access
-switchport access vlan 20
-no shutdown
+ switchport mode access
+ switchport access vlan 40
+ no shutdown
 exit
 
-! INTERFACE TO FILESERVER
+! ---------- SERVEURS INTERNES ----------
+! FILESERVER
 interface ethernet 1/0
-switchport mode access
-switchport access vlan 20
-no shutdown
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
 exit
 
-! INTERFACE TO DATABASE
+! DATABASE (MariaDB)
 interface ethernet 1/1
-switchport mode access
-switchport access vlan 20
-no shutdown
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
 exit
 
-! INTERFACE TO WORKSTATION
+! ---------- MANAGEMENT & SECURITE ----------
+! ADMINISTRATION RESEAU
 interface ethernet 1/2
-switchport mode access
-switchport access vlan 30
-no shutdown
+ switchport mode access
+ switchport access vlan 50
+ no shutdown
 exit
 
-! INTERFACE TO WAZUH
+! WAZUH
 interface ethernet 1/3
-switchport mode access
-switchport access vlan 10
-no shutdown
+ switchport mode access
+ switchport access vlan 50
+ no shutdown
 exit
 
-! INTERFACE TO KALI
+! ---------- POSTES CLIENTS & KALI-LAN ----------
+! Poste client Windows
+interface ethernet 3/2
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+exit
+
+! Kali-LAN (attaquant interne)
 interface ethernet 3/3
-switchport mode access
-switchport access vlan 30
-no shutdown
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
 exit
 
-! CLOSE OTHER INTERFACES
-interface range ethernet 2/0 - 3, ethernet 3/0 - 2
-switchport mode access
-switchport access vlan 999
-shutdown
+! ---------- PORTS NON UTILISES ----------
+interface range ethernet 2/0 - 3, ethernet 3/0 - 1
+ switchport mode access
+ switchport access vlan 999
+ shutdown
 exit
 
-exit
-wr 
+end
+wr
