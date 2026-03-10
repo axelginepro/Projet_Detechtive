@@ -1,4 +1,16 @@
+! ============================================
+! CONFIGURATION IOU — ROUTEUR L3
+! Projet Detechtive — Architecture L3
+! Routage inter-VLAN local via SVI
+! Lien routed point-à-point vers pfSense
+! ============================================
+
 configure terminal
+!
+! ============================================
+! ACTIVATION DU ROUTAGE IP (L3)
+! ============================================
+ip routing
 !
 ! ============================================
 ! CRÉATION DES VLANs
@@ -23,19 +35,65 @@ vlan 999
 exit
 !
 ! ============================================
-! TRUNK VERS PFSENSE (Router-on-a-Stick)
-! Tout le trafic inter-VLAN passe par pfSense
+! LIEN ROUTED VERS PFSENSE (point-à-point /30)
+! Remplace l'ancien trunk 802.1Q
+! IOU : 10.0.0.2 | pfSense LAN : 10.0.0.1
 ! ============================================
 interface ethernet 0/0
- description TRUNK_TO_PFSENSE
- switchport trunk encapsulation dot1q
- switchport mode trunk
- switchport trunk allowed vlan 10,20,30,40,50
+ description LINK_TO_PFSENSE
+ no switchport
+ ip address 10.0.0.2 255.255.255.252
  no shutdown
 exit
 !
 ! ============================================
-! DMZ — VLAN 10
+! SVI — INTERFACES VIRTUELLES PAR VLAN
+! Remplacent les sous-interfaces pfSense
+! ============================================
+!
+! VLAN 10 — DMZ (192.168.10.0/28)
+interface vlan 10
+ description GW_DMZ
+ ip address 192.168.10.1 255.255.255.240
+ no shutdown
+exit
+!
+! VLAN 20 — SERVERS (192.168.10.16/28)
+interface vlan 20
+ description GW_SERVERS
+ ip address 192.168.10.17 255.255.255.240
+ no shutdown
+exit
+!
+! VLAN 30 — WORKSTATIONS (192.168.10.128/25)
+interface vlan 30
+ description GW_WORKSTATIONS
+ ip address 192.168.10.129 255.255.255.128
+ no shutdown
+exit
+!
+! VLAN 40 — ACTIVE DIRECTORY (192.168.10.32/29)
+interface vlan 40
+ description GW_ACTIVEDIRECTORY
+ ip address 192.168.10.33 255.255.255.248
+ no shutdown
+exit
+!
+! VLAN 50 — MGMT & SECURITY (192.168.10.40/29)
+interface vlan 50
+ description GW_MGMT_SECURITY
+ ip address 192.168.10.41 255.255.255.248
+ no shutdown
+exit
+!
+! ============================================
+! ROUTE PAR DÉFAUT VERS PFSENSE
+! pfSense assure le NAT et la sortie Internet
+! ============================================
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
+!
+! ============================================
+! PORTS ACCESS — DMZ (VLAN 10)
 ! ============================================
 ! Web Server Apache/PHP — 192.168.10.10
 interface ethernet 0/2
@@ -54,7 +112,7 @@ interface ethernet 0/1
 exit
 !
 ! ============================================
-! ACTIVE DIRECTORY — VLAN 40
+! PORTS ACCESS — ACTIVE DIRECTORY (VLAN 40)
 ! ============================================
 ! SRV-AD01 — 192.168.10.34
 interface ethernet 0/3
@@ -65,7 +123,7 @@ interface ethernet 0/3
 exit
 !
 ! ============================================
-! SERVEURS INTERNES — VLAN 20
+! PORTS ACCESS — SERVEURS INTERNES (VLAN 20)
 ! ============================================
 ! File Server — 192.168.10.20
 interface ethernet 1/0
@@ -84,7 +142,7 @@ interface ethernet 1/1
 exit
 !
 ! ============================================
-! MANAGEMENT & SÉCURITÉ — VLAN 50
+! PORTS ACCESS — MANAGEMENT & SÉCURITÉ (VLAN 50)
 ! ============================================
 ! Administration réseau — 192.168.10.43
 interface ethernet 1/2
@@ -103,9 +161,9 @@ interface ethernet 1/3
 exit
 !
 ! ============================================
-! POSTES CLIENTS — VLAN 30
+! PORTS ACCESS — POSTES CLIENTS (VLAN 30)
 ! ============================================
-! Poste Windows — DHCP 192.168.10.130→.200
+! Poste Windows — DHCP 192.168.10.130 -> .200
 interface ethernet 3/2
  description POSTE_CLIENT_WINDOWS
  switchport mode access
