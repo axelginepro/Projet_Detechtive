@@ -42,7 +42,7 @@
         .trust-none { background: rgba(100,100,100,0.2); color: #888; }
         .card-img { width: 100%; height: 180px; object-fit: contain; background: #000; border: 1px solid #333; margin-bottom: 10px; cursor: zoom-in; transition: transform 0.2s; border-radius: 4px; }
         .card-img:hover { border-color: var(--accent-color); transform: scale(1.02); }
-        .img-caption { font-size: 0.75rem; color: #888; text-align: center; margin-bottom: 15px; font-style: italic; }
+        figcaption { font-size: 0.75rem; color: #888; text-align: center; margin-bottom: 15px; font-style: italic; }
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { max-width: 90%; max-height: 90%; border: 2px solid var(--accent-color); box-shadow: 0 0 30px rgba(241,196,15,0.2); border-radius: 4px; }
         .close-hint { position: absolute; bottom: 30px; color: #fff; font-size: 0.9rem; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; }
@@ -53,16 +53,32 @@
         .rule-block p span.deny { color: #e74c3c; font-weight: 600; }
         .rule-block p span.vlan { color: var(--accent-color); }
         .arch-badge { display: inline-block; background: rgba(52,152,219,0.15); border: 1px solid #3498db; color: #3498db; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; font-family: 'Courier New', monospace; }
+        /* Navigation flottante */
+        nav.side-nav { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 999; }
+        nav.side-nav a { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 10px; font-size: 0.7rem; font-family: 'Courier New', monospace; border-radius: 4px; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+        nav.side-nav a:hover { border-color: var(--accent-color); color: var(--accent-color); }
         footer { text-align: center; margin-top: 50px; font-size: 0.8rem; color: #666; font-weight: 300; }
-        @media (max-width: 900px) { .grid, .grid-3 { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .grid, .grid-3 { grid-template-columns: 1fr; } nav.side-nav { display: none; } }
     </style>
 </head>
 <body>
 
-<div id="imgModal" class="modal" onclick="closeModal()">
-    <img class="modal-content" id="modalImg">
+<!-- Modale image -->
+<div id="imgModal" class="modal" role="dialog" aria-modal="true" aria-label="Aperçu image" onclick="closeModal()">
+    <img class="modal-content" id="modalImg" alt="">
     <div class="close-hint">[ Cliquer pour fermer ]</div>
 </div>
+
+<!-- Navigation latérale -->
+<nav class="side-nav" aria-label="Navigation sections">
+    <a href="#contexte">1. Contexte</a>
+    <a href="#architecture">2. Architecture</a>
+    <a href="#identites">3. Identités</a>
+    <a href="#backend">4. Backend</a>
+    <a href="#securite">5. Sécurité</a>
+    <a href="#vpn">6. VPN</a>
+    <a href="#ha">7. Haute Dispo.</a>
+</nav>
 
 <div class="container">
     <header>
@@ -70,19 +86,19 @@
         <p>Certification AIS (Niveau 6)</p>
     </header>
 
-    <section>
+    <section id="contexte">
         <h2>1. Contexte &amp; Objectifs</h2>
         <div class="card">
             <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : conception de l'architecture réseau sécurisée et intégration complète de la stack technique (Web, Data, Fichiers) dans une approche <strong>Secure by Design</strong>.</p>
             <ul>
-                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement[cite: 57, 405].</li>
-                <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau[cite: 57, 188].</li>
-                <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh SIEM) depuis un VLAN Management dédié et authentification unique (Active Directory)[cite: 132, 398].</li>
+                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement.</li>
+                <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau.</li>
+                <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh SIEM) depuis un VLAN Management dédié et authentification unique (Active Directory).</li>
             </ul>
         </div>
     </section>
 
-    <section>
+    <section id="architecture">
         <h2>2. Architecture Infrastructure</h2>
 
         <div class="card">
@@ -91,10 +107,10 @@
                 <span class="arch-badge">&#9654; Architecture : Router-on-a-Stick (802.1Q)</span>
             </div>
             <p style="font-size:0.88rem; color:#aaa; margin-bottom:16px;">
-                Le <strong>switch IOU opère en L2 pur</strong> (commutation uniquement, pas de routage inter-VLAN)[cite: 59]. 
-                <strong>pfSense</strong> centralise l'ensemble du routage, du filtrage et du NAT via 
-                <strong>5 sous-interfaces 802.1Q</strong> sur son interface LAN physique[cite: 75, 77]. 
-                Un <strong>trunk 802.1Q unique</strong> relie le switch à pfSense — pfSense porte toutes les passerelles VLAN[cite: 34].
+                Le <strong>switch IOU opère en L2 pur</strong> (commutation uniquement, pas de routage inter-VLAN).
+                <strong>pfSense</strong> centralise l'ensemble du routage, du filtrage et du NAT via
+                <strong>5 sous-interfaces 802.1Q</strong> sur son interface LAN physique.
+                Un <strong>trunk 802.1Q unique</strong> relie le switch à pfSense — pfSense porte toutes les passerelles VLAN.
             </p>
             <table class="vlan-table">
                 <thead>
@@ -115,7 +131,7 @@
                         <td><code>192.168.10.0/28</code></td>
                         <td><code>192.168.10.1</code></td>
                         <td><code>.10</code> Web, <code>.11</code> Webterm</td>
-                        <td>Serveur Web Apache/PHP, Webterm [cite: 71, 142]</td>
+                        <td>Serveur Web Apache/PHP, Webterm</td>
                         <td><span class="trust-badge trust-low">&#128308; Faible</span></td>
                     </tr>
                     <tr>
@@ -124,7 +140,7 @@
                         <td><code>192.168.10.16/28</code></td>
                         <td><code>192.168.10.17</code></td>
                         <td><code>.20</code> FS, <code>.21</code> DB</td>
-                        <td>File Server (SMB), Base de Données (MariaDB) [cite: 71, 142]</td>
+                        <td>File Server (SMB), Base de Données (MariaDB)</td>
                         <td><span class="trust-badge trust-medium">&#128992; Moyen</span></td>
                     </tr>
                     <tr>
@@ -133,7 +149,7 @@
                         <td><code>192.168.10.128/25</code></td>
                         <td><code>192.168.10.129</code></td>
                         <td>DHCP <code>.130&#8594;.200</code></td>
-                        <td>Workstations agents (Windows) [cite: 71, 142]</td>
+                        <td>Workstations agents (Windows)</td>
                         <td><span class="trust-badge trust-standard">&#128993; Standard</span></td>
                     </tr>
                     <tr>
@@ -142,7 +158,7 @@
                         <td><code>192.168.10.32/29</code></td>
                         <td><code>192.168.10.33</code></td>
                         <td><code>.34</code> SRV-AD01</td>
-                        <td>SRV-AD-01, DNS, PKI (AD CS) [cite: 71, 142]</td>
+                        <td>SRV-AD-01, DNS, PKI (AD CS)</td>
                         <td><span class="trust-badge trust-critical">&#128995; Critique</span></td>
                     </tr>
                     <tr>
@@ -151,17 +167,8 @@
                         <td><code>192.168.10.40/29</code></td>
                         <td><code>192.168.10.41</code></td>
                         <td><code>.42</code> Wazuh, <code>.43</code> Admin</td>
-                        <td>SIEM Wazuh, Administration réseau [cite: 71, 142]</td>
+                        <td>SIEM Wazuh, Administration réseau</td>
                         <td><span class="trust-badge trust-critical">&#128995; Critique</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Zone Externe</strong></td>
-                        <td><code>—</code></td>
-                        <td><code>WAN</code></td>
-                        <td>—</td>
-                        <td>—</td>
-                        <td>Kali Linux (Pentest)</td>
-                        <td><span class="trust-badge trust-none">&#9899; Non fiable</span></td>
                     </tr>
                 </tbody>
             </table>
@@ -170,71 +177,60 @@
         <div class="grid">
             <div class="card">
                 <h3>Topologie GNS3</h3>
-                <img src="gns3.png" alt="Topologie GNS3" class="card-img" onclick="openModal(this.src)">
-                <div class="img-caption">Cliquez pour agrandir le schéma de câblage</div>
+                <figure style="margin:0;">
+                    <img src="gns3.png" alt="Topologie GNS3 — schéma de câblage" class="card-img"
+                         onclick="openModal(this.src)"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
+                    <figcaption>Cliquez pour agrandir le schéma de câblage</figcaption>
+                </figure>
                 <ul>
-                    <li><strong>Switch IOU (L2) :</strong> Trunk 802.1Q unique vers pfSense — pas de routage interne[cite: 34, 59].</li>
-                    <li><strong>VLAN 10 (DMZ) :</strong> Serveur Web exposé, isolé du réseau interne[cite: 122, 125].</li>
-                    <li><strong>VLAN 20 :</strong> File Server &amp; BDD, jamais joignables depuis Internet[cite: 195].</li>
-                    <li><strong>VLAN 40 :</strong> AD isolé — inaccessible depuis la DMZ par règle pfSense[cite: 171, 178].</li>
-                    <li><strong>VLAN 50 :</strong> Wazuh collecte les logs de tous les VLANs[cite: 398, 400].</li>
+                    <li><strong>Switch IOU (L2) :</strong> Trunk 802.1Q unique vers pfSense — pas de routage interne.</li>
+                    <li><strong>VLAN 10 (DMZ) :</strong> Serveur Web exposé, isolé du réseau interne.</li>
+                    <li><strong>VLAN 20 :</strong> File Server &amp; BDD, jamais joignables depuis Internet.</li>
+                    <li><strong>VLAN 40 :</strong> AD isolé — inaccessible depuis la DMZ par règle pfSense.</li>
+                    <li><strong>VLAN 50 :</strong> Wazuh collecte les logs de tous les VLANs.</li>
                 </ul>
             </div>
             <div class="card">
                 <h3>Règles de Filtrage pfSense</h3>
-                <img src="ip.png" alt="Plan IP" class="card-img" onclick="openModal(this.src)">
-                <div class="img-caption">Cliquez pour voir les plages IP et passerelles</div>
+                <figure style="margin:0;">
+                    <img src="ip.png" alt="Plan IP — plages et passerelles" class="card-img"
+                         onclick="openModal(this.src)"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='none';">
+                    <figcaption>Cliquez pour voir les plages IP et passerelles</figcaption>
+                </figure>
                 <div class="rule-block">
-                    <p><span class="vlan">WAN</span> &#8594; <span class="vlan">VLAN 10</span> : <span class="allow">NAT</span> ports 80/443 &#8594; <code>.10</code> [cite: 118, 122]</p>
-                    <p><span class="vlan">WAN</span> &#8594; <span class="vlan">pfSense</span> : <span class="allow">ALLOW</span> UDP 51820 (WireGuard) [cite: 110, 113]</p>
-                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 3306 (DB) &amp; 445 (SMB) [cite: 145, 154]</p>
-                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 40/50</span> : <span class="deny">DENY ALL</span> [cite: 171, 179]</p>
-                    <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 40</span> : <span class="allow">ALLOW</span> 389/636 (LDAP/S) [cite: 216, 222]</p>
-                    <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 445 (SMB) [cite: 234, 240]</p>
-                    <p><span class="vlan">LAN internes</span> &#8594; Internet : <span class="allow">ALLOW</span> sortant (loggué SIEM) [cite: 163, 243]</p>
-                    <p><span class="vlan">VLAN 50</span> &#8594; tous : <span class="allow">READ ONLY</span> (agents Wazuh 1514/1515) [cite: 204, 275]</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" style="border-left: 5px solid #9b59b6;">
-            <h3>Pourquoi cette segmentation ?</h3>
-            <div class="grid-3">
-                <div>
-                    <h4>Serveur Web en DMZ</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le Web Server (<code>.10</code>) est le seul élément exposé. En l'isolant dans VLAN 10, une compromission n'expose ni l'AD, ni la BDD[cite: 125, 187].</p>
-                </div>
-                <div>
-                    <h4>AD isolé (VLAN 40)</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">L'Active Directory (<code>.34</code>) est le composant critique. Un attaquant en DMZ ne peut pas atteindre l'AD — flux VLAN 10 &#8594; 40 bloqué[cite: 171, 293].</p>
-                </div>
-                <div>
-                    <h4>Wazuh isolé (VLAN 50)</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le SIEM Wazuh (<code>.42</code>) est en zone dédiée. Même si la DMZ est compromise, l'attaquant ne peut pas désactiver la supervision[cite: 186, 398].</p>
+                    <p><span class="vlan">WAN</span> &#8594; <span class="vlan">VLAN 10</span> : <span class="allow">NAT</span> ports 80/443 &#8594; <code>.10</code></p>
+                    <p><span class="vlan">WAN</span> &#8594; <span class="vlan">pfSense</span> : <span class="allow">ALLOW</span> UDP 51820 (WireGuard)</p>
+                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 3306 (DB) &amp; 445 (SMB)</p>
+                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 40/50</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 40</span> : <span class="allow">ALLOW</span> 389/636 (LDAP/S)</p>
+                    <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 445 (SMB)</p>
+                    <p><span class="vlan">LAN internes</span> &#8594; Internet : <span class="allow">ALLOW</span> sortant (loggué SIEM)</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section>
+    <section id="identites">
         <h2>3. Gestion des Identités (Active Directory)</h2>
         <div class="card">
             <div class="grid">
                 <div>
                     <h3>Moindre Privilège (Least Privilege)</h3>
-                    <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Le principe fondamental de sécurité appliqué au projet[cite: 109].</p>
+                    <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Le principe fondamental de sécurité appliqué au projet.</p>
                     <ul>
                         <li><strong>Structure AD :</strong> Organisation par OU pour séparer les Agents des Administrateurs.</li>
                         <li><strong>Droits Restreints :</strong> Les utilisateurs standard n'ont aucun droit d'administration sur les serveurs ou postes.</li>
                         <li><strong>Comptes de Service :</strong> L'application Web utilise un compte AD dédié avec des droits minimaux.</li>
-                        <li><strong>PKI Interne (AD CS) :</strong> Le serveur AD gère l'Autorité de Certification pour chiffrer les flux internes (Web/DB)[cite: 405].</li>
+                        <li><strong>PKI Interne (AD CS) :</strong> Le serveur AD gère l'Autorité de Certification pour chiffrer les flux internes.</li>
                     </ul>
                 </div>
                 <div>
                     <h3>Serveur de Fichiers Sécurisé</h3>
                     <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Isolation stricte des données sensibles.</p>
                     <ul>
-                        <li><strong>Dossiers Dédiés :</strong> Chaque agent dispose d'un dossier partagé personnel sur le File Server (<code>.20</code>, VLAN 20).</li>
+                        <li><strong>Dossiers Dédiés :</strong> Chaque agent dispose d'un dossier partagé personnel sur le File Server (VLAN 20).</li>
                         <li><strong>Permissions NTFS :</strong> ACLs configurées pour l'isolation complète entre agents.</li>
                         <li><strong>Mappage Dynamique :</strong> Au login, seul le lecteur réseau correspondant est monté via GPO.</li>
                     </ul>
@@ -243,7 +239,7 @@
         </div>
     </section>
 
-    <section>
+    <section id="backend">
         <h2>4. Développement &amp; Backend (Détail)</h2>
         <div class="card">
             <div style="margin-bottom: 20px; text-align: center;">
@@ -257,93 +253,111 @@
             <div class="grid-3">
                 <div>
                     <h4>Serveur Web — VLAN 10</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.10</code>. Seul point exposé à Internet via NAT[cite: 122, 149].</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.10</code>. Seul point exposé à Internet via NAT.</p>
                     <ul>
-                        <li><strong>Rôle Pivot :</strong> Orchestre les demandes vers la BDD (3306) et le File Server (445) en VLAN 20[cite: 153, 162].</li>
+                        <li><strong>Rôle Pivot :</strong> Orchestre les demandes vers la BDD (3306) et le File Server (445) en VLAN 20.</li>
                         <li><strong>Sessions :</strong> Gestion stricte via <code>session_start()</code> et redirection si non authentifié.</li>
                         <li><strong>Sécurité :</strong> Validation des entrées et whitelist des fichiers uploadés.</li>
                     </ul>
                 </div>
                 <div>
                     <h4>Base de Données — VLAN 20</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.21</code>. Inaccessible depuis Internet[cite: 195, 207].</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.21</code>. Inaccessible depuis Internet.</p>
                     <ul>
                         <li><strong>Connexion SSL :</strong> Le client PHP utilise <code>PDO::MYSQL_ATTR_SSL_CA</code> pour valider l'identité MariaDB.</li>
-                        <li><strong>Isolation :</strong> VM dédiée en VLAN 20 — aucun accès direct depuis DMZ hors port 3306[cite: 145].</li>
+                        <li><strong>Isolation :</strong> VM dédiée en VLAN 20 — aucun accès direct depuis DMZ hors port 3306.</li>
                         <li><strong>Failover :</strong> <code>try/catch</code> PHP pour basculer en mode dégradé si SSL échoue.</li>
                     </ul>
                 </div>
                 <div>
                     <h4>File Server — VLAN 20</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.20</code>. Stockage des preuves en zone protégée[cite: 159, 239].</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.20</code>. Stockage des preuves en zone protégée.</p>
                     <ul>
-                        <li><strong>Protocole :</strong> Partage Windows (SMB port 445) monté dynamiquement depuis VLAN 10[cite: 154].</li>
+                        <li><strong>Protocole :</strong> Partage Windows (SMB port 445) monté dynamiquement depuis VLAN 10.</li>
                         <li><strong>Bridge PHP :</strong> Commande <code>net use</code> pour monter le lecteur réseau à la demande.</li>
-                        <li><strong>Permissions :</strong> Compte de service AD dédié (Least Privilege) — écriture sur dossier restreint.</li>
+                        <li><strong>Permissions :</strong> Compte de service AD dédié — écriture sur dossier restreint.</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <section>
-        <h2>5. Sécurité Applicative (AppSec)</h2>
+    <section id="securite">
+        <h2>5. Sécurité Applicative (AppSec) &amp; Infrastructure</h2>
         <div class="grid">
             <div class="card" style="border-left: 5px solid #2ecc71;">
                 <h3>Protection du Code</h3>
                 <ul>
                     <li><strong>Anti-SQLi :</strong> Usage exclusif de <strong>PDO</strong> et des requêtes préparées.</li>
-                    <li><strong>Anti-RCE :</strong> Renommage forcé des fichiers uploadés (<code>preg_replace</code>) pour bloquer les scripts malveillants.</li>
-                    <li><strong>Feedback SSL :</strong> Indicateur visuel informant l'agent de l'état du chiffrement via <code>Ssl_cipher</code>.</li>
+                    <li><strong>Anti-RCE :</strong> Renommage forcé des fichiers uploadés pour bloquer les scripts malveillants.</li>
+                    <li><strong>Feedback SSL :</strong> Indicateur visuel informant l'agent de l'état du chiffrement.</li>
                 </ul>
             </div>
             <div class="card" style="border-left: 5px solid #e74c3c;">
                 <h3>Sécurité Infrastructure</h3>
                 <ul>
-                    <li><strong>Switch IOU (L2) :</strong> Commutation pure — Trunk 802.1Q unique vers pfSense. Ports inutilisés en VLAN 999 + shutdown[cite: 53, 59].</li>
-                    <li><strong>Pare-feu pfSense :</strong> Routage inter-VLAN centralisé, filtrage stateful, NAT Web et VPN WireGuard UDP 51820[cite: 113, 122].</li>
-                    <li><strong>SIEM Wazuh :</strong> Alertes temps réel depuis VLAN 50 dédié — inaccessible depuis la DMZ[cite: 132, 186].</li>
-                    <li><strong>Traçabilité :</strong> Accès Internet autorisé mais intégralement loggué vers Wazuh pour détecter l'exfiltration[cite: 388, 389].</li>
-                    <li><strong>Hardening :</strong> Désactivation des services inutiles et isolation des ports (VLAN 999 shutdown)[cite: 53, 403].</li>
+                    <li><strong>Switch IOU (L2) :</strong> Commutation pure — Ports inutilisés en VLAN 999 + shutdown.</li>
+                    <li><strong>Pare-feu pfSense :</strong> Routage inter-VLAN centralisé, filtrage stateful et VPN WireGuard.</li>
+                    <li><strong>SIEM Wazuh :</strong> Alertes temps réel depuis VLAN 50 dédié — logs unidirectionnels.</li>
+                    <li><strong>Hardening :</strong> Désactivation des services inutiles et isolation physique des ports.</li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <section>
+    <section id="vpn">
         <h2>6. VPN WireGuard (Accès Admin Distant)</h2>
         <div class="card" style="border-left: 5px solid #3498db;">
             <div class="grid">
                 <div>
                     <h3>Paramètres</h3>
                     <ul>
-                        <li><strong>Protocole :</strong> UDP, Port <code>51820</code> sur WAN pfSense[cite: 321, 322].</li>
-                        <li><strong>Plage VPN :</strong> <code>10.10.10.0/24</code> (réseau virtuel WireGuard)[cite: 323].</li>
-                        <li><strong>Accès autorisé :</strong> VLAN 40 (AD) et VLAN 50 (Management)[cite: 333, 339].</li>
-                        <li><strong>Accès interdit :</strong> VLAN 10 (DMZ) et VLAN 30 (Clients) — principe du moindre privilège[cite: 352, 359].</li>
+                        <li><strong>Protocole :</strong> UDP, Port <code>51820</code> sur WAN pfSense.</li>
+                        <li><strong>Plage VPN :</strong> <code>10.10.10.0/24</code> (réseau virtuel WireGuard).</li>
+                        <li><strong>Accès autorisé :</strong> VLAN 40 (AD) et VLAN 50 (Management).</li>
+                        <li><strong>Accès interdit :</strong> VLAN 10 (DMZ) et VLAN 30 (Clients).</li>
                     </ul>
                 </div>
                 <div>
                     <h3>Justification</h3>
-                    <p style="font-size:0.9rem; color:#ccc;">Le VPN est réservé aux <strong>administrateurs IT en télétravail</strong>. Il permet de gérer pfSense, l'AD et Wazuh sans exposer RDP/SSH directement sur Internet[cite: 117, 367]. Les agents accèdent au réseau physiquement depuis le VLAN 30.</p>
+                    <p style="font-size:0.9rem; color:#ccc;">Le VPN est réservé aux <strong>administrateurs IT en télétravail</strong>. Il permet de gérer pfSense, l'AD et Wazuh sans exposer RDP/SSH directement sur Internet.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section>
-        <h2>7. Gestion de Projet</h2>
-        <div class="card">
-            <ul>
-                <li><strong>Planification :</strong> Méthode Kanban sur <strong>Trello</strong> — suivi des tâches réseau, développement et sécurité.</li>
-                <li><strong>Design :</strong> Schématisation sur <strong>Excalidraw</strong> (plan d'adressage IP avec passerelles sur pfSense et topologie GNS3)[cite: 18].</li>
-                <li><strong>Versionning :</strong> Code source sur <strong>GitHub</strong> — commits réguliers et traçabilité des modifications.</li>
-            </ul>
+    <section id="ha">
+        <h2>7. Évolutivité &amp; Haute Disponibilité (Redondance)</h2>
+        <div class="card" style="border-top: 4px solid var(--secondary-accent);">
+            <p style="font-size:0.9rem; color:#ccc; margin-bottom:15px;">
+                Pour éliminer les points de défaillance uniques (SPOF) identifiés, les évolutions suivantes sont préconisées pour le futur :
+            </p>
+            <div class="grid">
+                <div>
+                    <h4>1. Redondance Firewall (CARP)</h4>
+                    <ul>
+                        <li><strong>Cluster pfSense :</strong> Mise en place de deux nœuds pfSense en mode Haute Disponibilité.</li>
+                        <li><strong>Protocole CARP :</strong> Utilisation d'IP virtuelles (VIP) flottantes pour les passerelles de chaque VLAN.</li>
+                        <li><strong>Synchronisation :</strong> Réplication automatique des sessions et de la configuration entre les unités.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>2. Agrégation de Liens (LACP)</h4>
+                    <ul>
+                        <li><strong>Lien Trunk :</strong> Remplacer le lien unique par un <strong>EtherChannel (LACP)</strong>.</li>
+                        <li><strong>Résilience L2 :</strong> Basculement instantané sur le lien secondaire en cas de rupture physique.</li>
+                        <li><strong>Performance :</strong> Augmentation de la bande passante globale pour le routage inter-VLAN.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rule-block" style="text-align: center; border: 1px dashed var(--secondary-accent);">
+                <p>&#128161; <em>Cette approche garantit que la panne d'un équipement physique n'entraîne pas l'arrêt total des services.</em></p>
+            </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2026 Detechtive Agency — Demo Day Jedha — Certification AIS</p>
+        <p>&copy; 2026 Detechtive Agency — Certification AIS</p>
     </footer>
 </div>
 
@@ -353,6 +367,7 @@
         var modalImg = document.getElementById("modalImg");
         modal.style.display = "flex";
         modalImg.src = src;
+        modalImg.alt = "Aperçu agrandi";
     }
     function closeModal() {
         document.getElementById("imgModal").style.display = "none";
