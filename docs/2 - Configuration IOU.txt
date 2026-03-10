@@ -1,0 +1,93 @@
+configure terminal
+
+! ============================================
+! DÉSACTIVATION DU ROUTAGE L3
+! ============================================
+no ip routing
+
+! ============================================
+! CRÉATION DES VLANs (Identique à ton plan [cite: 33, 71])
+! ============================================
+vlan 10
+ name DMZ
+exit
+vlan 20
+ name SERVERS
+exit
+vlan 30
+ name WORKSTATIONS
+exit
+vlan 40
+ name ACTIVEDIRECTORY
+exit
+vlan 50
+ name MGMT_SECURITY
+exit
+vlan 999
+ name UNUSED
+exit
+
+! ============================================
+! CONFIGURATION DU TRUNK VERS PFSENSE
+! Remplace le lien routed 10.0.0.2 [cite: 34, 35]
+! ============================================
+interface ethernet 0/0
+ description TRUNK_TO_PFSENSE
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ ! On n'autorise que les VLANs utiles pour la sécurité
+ switchport trunk allowed vlan 10,20,30,40,50
+ no shutdown
+exit
+
+! ============================================
+! PORTS ACCESS — AFFECTATION DES MACHINES
+! (On garde ton plan de câblage GNS3 [cite: 43, 45, 47, 49, 51])
+! ============================================
+
+! VLAN 10 - DMZ Web Server
+interface range ethernet 0/1 - 2
+ switchport mode access
+ switchport access vlan 10
+ no shutdown
+exit
+
+! VLAN 20 - SERVERS
+interface range ethernet 1/0 - 1
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
+exit
+
+! VLAN 30 - WORKSTATIONS
+interface ethernet 3/2
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+exit
+
+! VLAN 40 - ACTIVE DIRECTORY
+interface ethernet 0/3
+ switchport mode access
+ switchport access vlan 40
+ no shutdown
+exit
+
+! VLAN 50 - MGMT & SECURITY
+interface range ethernet 1/2 - 3
+ switchport mode access
+ switchport access vlan 50
+ no shutdown
+exit
+
+! ============================================
+! SÉCURISATION DES PORTS INUTILISÉS [cite: 52, 53]
+! ============================================
+interface range ethernet 2/0 - 3, ethernet 3/0 - 1
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+exit
+
+end
+write
