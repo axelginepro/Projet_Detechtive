@@ -19,26 +19,30 @@
 
 ## 🏗️ Architecture & Infrastructure
 
-L'infrastructure est entièrement virtualisée et émulée via **GNS3**. Elle repose sur une segmentation stricte en VLANs pour limiter les mouvements latéraux et réduire la surface d'attaque. Le pare-feu **pfSense** assure le routage inter-VLAN et applique des règles de filtrage entre chaque zone.
+L'infrastructure est entièrement virtualisée et émulée via **GNS3**. Elle repose sur une segmentation stricte en VLANs pour limiter les mouvements latéraux et réduire la surface d'attaque.
+
+Le **switch IOU (L3)** assure le routage inter-VLAN entre les 5 zones internes. Le **pare-feu pfSense** est positionné en coupure entre Internet et le switch : il assure le filtrage périmétrique, le NAT, et sert de passerelle par défaut du switch vers Internet (IP LAN : `192.168.10.1/24`, IP switch uplink : `192.168.10.2`).
 
 ### 🗺️ Topologie Réseau
 
 Le réseau est cloisonné en **5 zones de sécurité** indépendantes, chacune avec un niveau de confiance et des droits d'accès distincts.
 
-| Zone | VLAN | CIDR | Services Hébergés | Niveau de confiance |
-| :--- | :---: | :--- | :--- | :---: |
-| **DMZ** | `10` | `192.168.10.0/28` | Serveur Web (Apache/PHP), Webterm | 🔴 Faible |
-| **Serveurs Internes** | `20` | `192.168.10.16/28` | File Server, Base de Données (MariaDB) | 🟠 Moyen |
-| **Postes Clients** | `30` | `192.168.10.128/25` | Workstations des agents (Windows) | 🟡 Standard |
-| **Active Directory** | `40` | `192.168.10.32/29` | Contrôleur de Domaine (SRV-AD-01), DNS | 🔴 Critique |
-| **Management & Sécurité** | `50` | `192.168.10.40/29` | SIEM Wazuh, administration réseau | 🔴 Critique |
-| **Zone Externe** | `-` | `WAN` | Poste Attaquant (Kali Linux) — Pentest | ⚫ Non fiable |
+| Zone | VLAN | CIDR | Passerelle | Plage IP | Services Hébergés | Niveau de confiance |
+| :--- | :---: | :--- | :--- | :--- | :--- | :---: |
+| **DMZ** | `10` | `192.168.10.0/28` | `192.168.10.1` | `.2 → .14` | Serveur Web Apache/PHP (`192.168.10.10`), Webterm (`192.168.10.11`) | 🔴 Faible |
+| **Serveurs Internes** | `20` | `192.168.10.16/28` | `192.168.10.17` | `.18 → .30` | File Server (`192.168.10.20`), Base de Données MariaDB (`192.168.10.21`) | 🟠 Moyen |
+| **Postes Clients** | `30` | `192.168.10.128/25` | `192.168.10.129` | `.130 → .254` | Workstations des agents Windows (DHCP `.130→.200`) | 🟡 Standard |
+| **Active Directory** | `40` | `192.168.10.32/29` | `192.168.10.33` | `.34 → .38` | Contrôleur de Domaine SRV-AD-01 / DNS (`192.168.10.34`) | 🔴 Critique |
+| **Management & Sécurité** | `50` | `192.168.10.40/29` | `192.168.10.41` | `.42 → .46` | SIEM Wazuh (`192.168.10.42`), Administration réseau (`192.168.10.43`) | 🔴 Critique |
+| **Zone Externe** | `-` | `WAN` | - | - | Poste Attaquant (Kali Linux) — Pentest | ⚫ Non fiable |
 
-### 🔒 Principes de segmentation
+### 🔒 Principes de segmentation & règles pfSense
 
-- Le **Serveur Web (VLAN 10 / DMZ)** est exposé depuis Internet via pfSense. Il ne peut communiquer avec le VLAN 20 que sur les ports applicatifs stricts (MariaDB, SMB) — jamais en accès libre.
-- Le **VLAN 40 (AD)** est totalement isolé de la DMZ. Seuls les VLANs 20, 30 et 50 peuvent interroger le contrôleur de domaine sur les ports LDAP/Kerberos autorisés.
-- Le **VLAN 50 (Wazuh)** collecte les logs de tous les VLANs en lecture seule. Aucun flux entrant depuis la DMZ n'est autorisé vers ce VLAN.
+- **DMZ (VLAN 10) → VLANs internes (20/30/40/50) :** BLOCK par défaut. **Seule exception :** Serveur Web (`192.168.10.10`) → MariaDB VLAN 20 sur port `3306/TCP` uniquement.
+- **VLAN 40 (AD) :** Totalement isolé de la DMZ. Accessible uniquement depuis les VLANs 20, 30 et 50 sur les ports LDAP/Kerberos autorisés.
+- **VLAN 50 (Wazuh) :** Collecte les logs de tous les VLANs en lecture seule. Aucun flux entrant depuis la DMZ n'est autorisé vers ce VLAN.
+- **LAN internes → Internet :** ALLOW sortant, logs activés et envoyés vers Wazuh (VLAN 50).
+- **WAN entrant :** Seuls les ports `80/443` (NAT vers `192.168.10.10`) et `51820/UDP` (VPN WireGuard admin) sont ouverts. Tout le reste est BLOCK/DROP avec log vers Wazuh.
 - Le poste **Kali Linux** est positionné avant pfSense (zone WAN) pour simuler un attaquant externe réaliste sans accès au réseau interne.
 
 ### 📸 Vue Logique (GNS3)
@@ -56,20 +60,21 @@ Le réseau est cloisonné en **5 zones de sécurité** indépendantes, chacune a
 ### 🖥️ Virtualisation & Réseau
 
 * **Hyperviseur / Émulateur :** GNS3 (gestion de la topologie), VMware Workstation.
-* **Sécurité Périmétrique :** pfSense (Firewalling, NAT, Routing inter-VLAN, DHCP).
+* **Routage inter-VLAN :** Switch IOU (L3) — 5 VLANs (10, 20, 30, 40, 50), trunk vers pfSense sur `ethernet 0/0`.
+* **Sécurité Périmétrique :** pfSense — Firewalling, NAT, VPN WireGuard (port `51820/UDP`), route statique vers `192.168.10.2`.
 * **Supervision de Sécurité :** Wazuh (SIEM & XDR) — collecte d'alertes sur l'ensemble des VLANs depuis le VLAN 50 dédié.
 
 ### ⚙️ Systèmes & Services (Full Windows)
 
 Toute l'infrastructure serveur repose sur **Windows Server 2022** pour assurer une cohérence d'administration via l'Active Directory.
 
-* **Serveur AD (SRV-AD-01) — VLAN 40 :** Active Directory DS, DNS. Isolé dans un VLAN dédié, inaccessible depuis la DMZ.
-* **Serveur de Fichiers (FS) — VLAN 20 :** Stockage des preuves, partages SMB sécurisés, quotas.
-* **Serveur Web — VLAN 10 (DMZ) :**
+* **Serveur AD (SRV-AD-01) — VLAN 40 — `192.168.10.34` :** Active Directory DS, DNS. Isolé dans un VLAN dédié, inaccessible depuis la DMZ.
+* **Serveur de Fichiers (FS) — VLAN 20 — `192.168.10.20` :** Stockage des preuves, partages SMB sécurisés, quotas.
+* **Serveur Web — VLAN 10 (DMZ) — `192.168.10.10` :**
   * OS : Windows Server 2022
   * Serveur HTTP : Apache (XAMPP/WAMP customisé)
   * Langage : PHP 8.x
-* **Serveur Base de Données — VLAN 20 :**
+* **Serveur Base de Données — VLAN 20 — `192.168.10.21` :**
   * OS : Windows Server 2022
   * SGBD : MariaDB (MySQL)
 
@@ -88,23 +93,30 @@ Ce projet met en œuvre une défense en profondeur, du réseau à la couche appl
 ### 1. Segmentation réseau (Defense in Depth)
 
 * **5 VLANs isolés** avec règles pfSense strictes (whitelist par port/service, pas de règles "any to any").
-* Le **Serveur Web est en DMZ** (VLAN 10) : une compromission n'expose ni l'AD, ni les données internes.
-* **L'AD est isolé** dans VLAN 40 : inaccessible depuis Internet et depuis la DMZ.
-* **Wazuh est isolé** dans VLAN 50 : un attaquant qui compromet la DMZ ne peut pas désactiver la supervision.
+* Le **Serveur Web est en DMZ** (VLAN 10 — `192.168.10.10`) : une compromission n'expose ni l'AD, ni les données internes.
+* **L'AD est isolé** dans VLAN 40 (`192.168.10.34`) : inaccessible depuis Internet et depuis la DMZ.
+* **Wazuh est isolé** dans VLAN 50 (`192.168.10.42`) : un attaquant qui compromet la DMZ ne peut pas désactiver la supervision.
 
 ### 2. Chiffrement des Flux Critiques
 
 * **HTTPS Strict :** L'application web n'est accessible que via TLS (certificat auto-signé ou autorité privée).
-* **Database SSL/TLS :** La connexion entre le backend PHP et MariaDB est chiffrée.
+* **Database SSL/TLS :** La connexion entre le backend PHP et MariaDB (`192.168.10.21`) est chiffrée.
   * *Détail technique :* Utilisation de `PDO::MYSQL_ATTR_SSL_CA` pointant vers le certificat CA (`ca-cert.pem`) pour prévenir les attaques Man-in-the-Middle.
 * **Vérification Active :** Le dashboard affiche en temps réel le statut du chiffrement SQL (`Ssl_cipher`).
 
-### 3. Gestion des Identités & Interopérabilité
+### 3. VPN WireGuard (Accès Admin Distant)
 
-* **Authentification Centralisée :** Les utilisateurs sont gérés via l'Active Directory (VLAN 40).
+* **Protocole :** UDP, Port `51820` sur l'interface WAN de pfSense.
+* **Plage VPN :** `10.10.10.0/24` (réseau virtuel WireGuard).
+* **Règles :** Les IP VPN peuvent accéder au VLAN 40 (AD) et VLAN 50 (Management). L'accès direct au VLAN 30 (postes clients) est interdit.
+* **Justification :** Administration distante sécurisée, sans ouvrir RDP/SSH directement depuis Internet.
+
+### 4. Gestion des Identités & Interopérabilité
+
+* **Authentification Centralisée :** Les utilisateurs sont gérés via l'Active Directory (`detechtive.local` — VLAN 40).
 * **Interopérabilité PHP ↔ SMB :** L'application web ne stocke pas les fichiers localement. Elle s'authentifie dynamiquement sur le File Server via `net use` pour monter les partages sécurisés uniquement le temps de la session.
 
-### 4. Sécurité Applicative (DevSecOps)
+### 5. Sécurité Applicative (DevSecOps)
 
 * **Upload Sécurisé :**
   * Whitelist d'extensions stricte (jpg, png, pdf, docx...).
@@ -122,14 +134,19 @@ Ce projet met en œuvre une défense en profondeur, du réseau à la couche appl
 Pour reproduire cet environnement sous GNS3 :
 
 1. Importer les appliances (pfSense, Windows Server 2022, Kali Linux, Webterm).
-2. Configurer les interfaces VLAN sur le switch virtuel (IOU/vSwitch) — 5 VLANs (10, 20, 30, 40, 50).
-3. Déployer les règles de pare-feu pfSense :
-   - VLAN 10 (DMZ) → VLAN 20 : ports 3306 (MariaDB) et 445 (SMB) uniquement.
-   - VLAN 10 (DMZ) → VLAN 40 : ports 389/636 (LDAP/LDAPS) uniquement.
-   - VLAN 10 (DMZ) → VLAN 50 : interdit.
-   - VLAN 50 (Management) → tous VLANs : lecture seule (Wazuh agents).
-4. Initialiser l'Active Directory et joindre les serveurs Web, BDD et FS au domaine `detechtive.local`.
-5. Configurer Wazuh agents sur chaque serveur pour remonter les alertes vers VLAN 50.
+2. Configurer le switch IOU — 5 VLANs (10, 20, 30, 40, 50) + trunk vers pfSense sur `ethernet 0/0`.
+3. Configurer pfSense :
+   - Interface LAN : `192.168.10.1/24`
+   - Route statique : `192.168.10.0/24` via gateway `192.168.10.2` (switch IOU).
+   - VPN WireGuard : UDP `51820`.
+4. Déployer les règles de pare-feu pfSense :
+   - WAN → NAT HTTP/HTTPS vers `192.168.10.10` (Serveur Web DMZ).
+   - VLAN 10 (DMZ) → VLAN 20 : port `3306/TCP` (MariaDB) uniquement.
+   - VLAN 10 (DMZ) → VLAN 40/50 : **BLOCK**.
+   - VLAN 50 (Management) → tous VLANs : lecture seule (agents Wazuh).
+   - LAN internes → Internet : ALLOW sortant avec logs.
+5. Initialiser l'Active Directory et joindre les serveurs Web, BDD et FS au domaine `detechtive.local`.
+6. Configurer les agents Wazuh sur chaque serveur pour remonter les alertes vers `192.168.10.42` (VLAN 50).
 
 ---
 
