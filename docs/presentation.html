@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soutenance Projet - Detechtive Agency</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -251,11 +251,11 @@
     </header>
 
     <section>
-        <h2>1. Contexte & Objectifs</h2>
+        <h2>1. Contexte &amp; Objectifs</h2>
         <div class="card">
             <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : conception de l'architecture réseau sécurisée et intégration complète de la stack technique (Web, Data, Fichiers) dans une approche <strong>Secure by Design</strong>.</p>
             <ul>
-                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement (ACL).</li>
+                <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement.</li>
                 <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau.</li>
                 <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh SIEM) depuis un VLAN Management dédié et authentification unique (Active Directory).</li>
             </ul>
@@ -268,7 +268,9 @@
         <div class="card">
             <h3>Segmentation réseau — 5 zones de sécurité</h3>
             <p style="font-size:0.88rem; color:#aaa; margin-bottom:16px;">
-                Chaque zone dispose d'un niveau de confiance distinct. pfSense applique des règles de filtrage strictes entre chaque VLAN — aucune règle "any to any".
+                Le <strong>switch IOU (L3)</strong> assure le routage inter-VLAN entre les 5 zones internes (<code>ip routing</code>, SVI par VLAN).
+                <strong>pfSense</strong> est positionné en coupure entre Internet et le switch : il assure le filtrage périmétrique, le NAT et le VPN.
+                IP LAN pfSense : <code>192.168.10.1/24</code> — IP uplink switch IOU : <code>192.168.10.2</code>.
             </p>
             <table class="vlan-table">
                 <thead>
@@ -276,6 +278,8 @@
                         <th>Zone</th>
                         <th>VLAN</th>
                         <th>CIDR</th>
+                        <th>Passerelle</th>
+                        <th>IP Fixe(s)</th>
                         <th>Services</th>
                         <th>Confiance</th>
                     </tr>
@@ -285,13 +289,17 @@
                         <td><strong>DMZ</strong></td>
                         <td><code>10</code></td>
                         <td><code>192.168.10.0/28</code></td>
-                        <td>Serveur Web (Apache/PHP), Webterm</td>
+                        <td><code>192.168.10.1</code></td>
+                        <td><code>.10</code> Web, <code>.11</code> Webterm</td>
+                        <td>Serveur Web Apache/PHP, Webterm</td>
                         <td><span class="trust-badge trust-low">🔴 Faible</span></td>
                     </tr>
                     <tr>
                         <td><strong>Serveurs Internes</strong></td>
                         <td><code>20</code></td>
                         <td><code>192.168.10.16/28</code></td>
+                        <td><code>192.168.10.17</code></td>
+                        <td><code>.20</code> FS, <code>.21</code> DB</td>
                         <td>File Server, Base de Données (MariaDB)</td>
                         <td><span class="trust-badge trust-medium">🟠 Moyen</span></td>
                     </tr>
@@ -299,6 +307,8 @@
                         <td><strong>Postes Clients</strong></td>
                         <td><code>30</code></td>
                         <td><code>192.168.10.128/25</code></td>
+                        <td><code>192.168.10.129</code></td>
+                        <td>DHCP <code>.130→.200</code></td>
                         <td>Workstations agents (Windows)</td>
                         <td><span class="trust-badge trust-standard">🟡 Standard</span></td>
                     </tr>
@@ -306,20 +316,26 @@
                         <td><strong>Active Directory</strong></td>
                         <td><code>40</code></td>
                         <td><code>192.168.10.32/29</code></td>
-                        <td>SRV-AD-01, DNS</td>
+                        <td><code>192.168.10.33</code></td>
+                        <td><code>.34</code> SRV-AD01</td>
+                        <td>SRV-AD-01 (detechtive.local), DNS</td>
                         <td><span class="trust-badge trust-critical">🟣 Critique</span></td>
                     </tr>
                     <tr>
-                        <td><strong>Management & Sécurité</strong></td>
+                        <td><strong>Management &amp; Sécurité</strong></td>
                         <td><code>50</code></td>
                         <td><code>192.168.10.40/29</code></td>
-                        <td>SIEM Wazuh, administration</td>
+                        <td><code>192.168.10.41</code></td>
+                        <td><code>.42</code> Wazuh, <code>.43</code> Admin</td>
+                        <td>SIEM Wazuh, Administration réseau</td>
                         <td><span class="trust-badge trust-critical">🟣 Critique</span></td>
                     </tr>
                     <tr>
                         <td><strong>Zone Externe</strong></td>
                         <td><code>—</code></td>
                         <td><code>WAN</code></td>
+                        <td>—</td>
+                        <td>—</td>
                         <td>Kali Linux (Pentest)</td>
                         <td><span class="trust-badge trust-none">⚫ Non fiable</span></td>
                     </tr>
@@ -334,20 +350,21 @@
                 <div class="img-caption">Cliquez pour agrandir le schéma de câblage</div>
                 <ul>
                     <li><strong>VLAN 10 (DMZ) :</strong> Serveur Web exposé, isolé du réseau interne.</li>
-                    <li><strong>VLAN 20 :</strong> File Server & BDD, jamais joignables depuis Internet.</li>
+                    <li><strong>VLAN 20 :</strong> File Server &amp; BDD, jamais joignables depuis Internet.</li>
                     <li><strong>VLAN 40 :</strong> AD isolé — inaccessible depuis la DMZ.</li>
                     <li><strong>VLAN 50 :</strong> Wazuh collecte les logs de tous les VLANs.</li>
                 </ul>
             </div>
             <div class="card">
-                <h3>Plan d'Adressage</h3>
+                <h3>Plan d'Adressage IP</h3>
                 <img src="ip.png" alt="Plan IP" class="card-img" onclick="openModal(this.src)">
-                <div class="img-caption">Cliquez pour voir les plages IP et flux</div>
+                <div class="img-caption">Cliquez pour voir les plages IP et passerelles</div>
                 <div class="rule-block">
-                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> ports 3306, 445 uniquement</p>
-                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 40</span> : <span class="allow">ALLOW</span> ports 389/636 uniquement</p>
-                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 50</span> : <span class="deny">DENY ALL</span></p>
-                    <p><span class="vlan">VLAN 30</span> → <span class="vlan">VLAN 10</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">WAN</span> → <span class="vlan">VLAN 10</span> : <span class="allow">NAT</span> ports 80/443 → <code>192.168.10.10</code></p>
+                    <p><span class="vlan">WAN</span> → <span class="vlan">pfSense</span> : <span class="allow">ALLOW</span> UDP 51820 (WireGuard VPN)</p>
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> port 3306 uniquement</p>
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 40/50</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">LAN internes</span> → Internet : <span class="allow">ALLOW</span> sortant (logs Wazuh)</p>
                     <p><span class="vlan">VLAN 50</span> → tous : <span class="allow">READ ONLY</span> (agents Wazuh)</p>
                 </div>
             </div>
@@ -358,15 +375,15 @@
             <div class="grid-3">
                 <div>
                     <h4>Serveur Web en DMZ</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le Web Server est le seul élément exposé à Internet. En l'isolant dans VLAN 10, une compromission n'expose ni l'AD, ni la BDD, ni les postes clients.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">Le Web Server (<code>192.168.10.10</code>) est le seul élément exposé à Internet via NAT pfSense. En l'isolant dans VLAN 10, une compromission n'expose ni l'AD, ni la BDD, ni les postes clients.</p>
                 </div>
                 <div>
                     <h4>AD isolé (VLAN 40)</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">L'Active Directory est le composant le plus critique du réseau. Un attaquant qui compromet la DMZ ne peut pas atteindre l'AD — le pare-feu interne bloque tout accès non explicitement autorisé.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">L'Active Directory (<code>192.168.10.34</code>) est le composant le plus critique. Un attaquant qui compromet la DMZ ne peut pas atteindre l'AD — tout flux VLAN 10 → VLAN 40 est bloqué par pfSense.</p>
                 </div>
                 <div>
                     <h4>Wazuh isolé (VLAN 50)</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Le SIEM est en VLAN dédié. Même si la DMZ est compromise, l'attaquant ne peut pas désactiver la supervision ou effacer ses traces — aucun flux entrant depuis VLAN 10 vers VLAN 50 n'est autorisé.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">Le SIEM Wazuh (<code>192.168.10.42</code>) est en VLAN dédié. Même si la DMZ est compromise, l'attaquant ne peut pas désactiver la supervision — aucun flux entrant VLAN 10 → VLAN 50 n'est autorisé.</p>
                 </div>
             </div>
         </div>
@@ -389,7 +406,7 @@
                     <h3>Serveur de Fichiers Sécurisé</h3>
                     <p style="font-size:0.9rem; color:#ccc; margin-bottom:10px;">Isolation stricte des données sensibles.</p>
                     <ul>
-                        <li><strong>Dossiers Dédiés :</strong> Chaque agent dispose d'un dossier partagé personnel sur le File Server (VLAN 20).</li>
+                        <li><strong>Dossiers Dédiés :</strong> Chaque agent dispose d'un dossier partagé personnel sur le File Server (<code>192.168.10.20</code>, VLAN 20).</li>
                         <li><strong>Permissions NTFS :</strong> ACLs configurées pour que l'Agent A ne puisse ni lire ni voir le dossier de l'Agent B.</li>
                         <li><strong>Mappage Dynamique :</strong> Au login, seul le lecteur réseau correspondant à l'utilisateur connecté est monté.</li>
                     </ul>
@@ -399,10 +416,10 @@
     </section>
 
     <section>
-        <h2>4. Développement & Backend (Détail)</h2>
+        <h2>4. Développement &amp; Backend (Détail)</h2>
         <div class="card">
             <div style="margin-bottom: 20px; text-align: center;">
-                <span class="tag">Apache</span>
+                <span class="tag">Apache (XAMPP/Windows)</span>
                 <span class="tag">PHP 8.x</span>
                 <span class="tag">MariaDB</span>
                 <span class="tag">Windows Server 2022</span>
@@ -412,9 +429,9 @@
             <div class="grid-3">
                 <div>
                     <h4>Serveur Web — VLAN 10</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Seul point exposé à Internet.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.10</code>. Seul point exposé à Internet.</p>
                     <ul>
-                        <li><strong>Rôle Pivot :</strong> Orchestre les demandes entre l'utilisateur, la BDD (VLAN 20) et le File Server (VLAN 20).</li>
+                        <li><strong>Rôle Pivot :</strong> Orchestre les demandes entre l'utilisateur, la BDD (VLAN 20 — port 3306) et le File Server (VLAN 20 — SMB).</li>
                         <li><strong>Sessions :</strong> Gestion stricte via <code>session_start()</code>. Redirection si non authentifié.</li>
                         <li><strong>Sécurité :</strong> Validation des entrées et whitelist des fichiers uploadés.</li>
                     </ul>
@@ -422,9 +439,9 @@
 
                 <div>
                     <h4>Base de Données — VLAN 20</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Inaccessible depuis Internet.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.21</code>. Inaccessible depuis Internet.</p>
                     <ul>
-                        <li><strong>Connexion SSL :</strong> Le client PHP utilise un certificat CA pour valider l'identité du serveur MariaDB.</li>
+                        <li><strong>Connexion SSL :</strong> Le client PHP utilise <code>PDO::MYSQL_ATTR_SSL_CA</code> pour valider l'identité du serveur MariaDB.</li>
                         <li><strong>Isolation :</strong> VM dédiée en VLAN 20 — aucun accès direct depuis VLAN 10 hors port 3306.</li>
                         <li><strong>Failover :</strong> <code>try/catch</code> PHP pour basculer en mode dégradé si SSL échoue.</li>
                     </ul>
@@ -432,7 +449,7 @@
 
                 <div>
                     <h4>File Server — VLAN 20</h4>
-                    <p style="font-size:0.85rem; color:#aaa;">Stockage des preuves.</p>
+                    <p style="font-size:0.85rem; color:#aaa;">IP fixe : <code>192.168.10.20</code>. Stockage des preuves.</p>
                     <ul>
                         <li><strong>Protocole :</strong> Partage Windows (SMB) monté dynamiquement depuis VLAN 10.</li>
                         <li><strong>Bridge PHP :</strong> Commande <code>net use</code> pour monter le lecteur réseau à la demande.</li>
@@ -444,33 +461,55 @@
     </section>
 
     <section>
-        <h2>5. Sécurité Applicative (DevSecOps)</h2>
+        <h2>5. Sécurité Applicative (AppSec)</h2>
         <div class="grid">
             <div class="card" style="border-left: 5px solid #2ecc71;">
                 <h3>Protection du Code</h3>
                 <ul>
                     <li><strong>Anti-SQLi :</strong> Usage exclusif de <strong>PDO</strong> et des requêtes préparées.</li>
                     <li><strong>Anti-RCE :</strong> Renommage forcé des fichiers uploadés (<code>preg_replace</code>) pour éviter l'exécution de scripts.</li>
-                    <li><strong>Feedback :</strong> Indicateur visuel "Cadenas Vert/Rouge" informant l'agent de l'état du chiffrement SSL.</li>
+                    <li><strong>Feedback SSL :</strong> Indicateur visuel "Cadenas Vert/Rouge" informant l'agent de l'état du chiffrement (<code>Ssl_cipher</code>).</li>
                 </ul>
             </div>
             <div class="card" style="border-left: 5px solid #e74c3c;">
                 <h3>Sécurité Infrastructure</h3>
                 <ul>
-                    <li><strong>Pare-feu pfSense :</strong> 5 VLANs isolés, règles whitelist strictes par port/service.</li>
-                    <li><strong>SIEM Wazuh :</strong> Remontée d'alertes en temps réel depuis un VLAN Management dédié (VLAN 50), inaccessible depuis la DMZ.</li>
-                    <li><strong>Hardening :</strong> Désactivation des services inutiles et principe du moindre privilège appliqué sur tous les comptes.</li>
+                    <li><strong>Switch IOU (L3) :</strong> Routage inter-VLAN via SVI dédiées — <code>ip routing</code> activé, route par défaut vers pfSense (<code>192.168.10.1</code>).</li>
+                    <li><strong>Pare-feu pfSense :</strong> Filtrage périmétrique stateful, NAT (Web → <code>192.168.10.10</code>), VPN WireGuard UDP <code>51820</code>. Règles whitelist strictes, aucune règle "any to any".</li>
+                    <li><strong>SIEM Wazuh (<code>192.168.10.42</code>) :</strong> Remontée d'alertes en temps réel depuis VLAN 50 dédié, inaccessible depuis la DMZ.</li>
+                    <li><strong>Hardening :</strong> Désactivation des services inutiles, principe du moindre privilège sur tous les comptes.</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section>
-        <h2>6. Gestion de Projet</h2>
+        <h2>6. VPN WireGuard (Accès Admin Distant)</h2>
+        <div class="card" style="border-left: 5px solid #3498db;">
+            <div class="grid">
+                <div>
+                    <h3>Paramètres</h3>
+                    <ul>
+                        <li><strong>Protocole :</strong> UDP, Port <code>51820</code> sur l'interface WAN de pfSense.</li>
+                        <li><strong>Plage VPN :</strong> <code>10.10.10.0/24</code> (réseau virtuel WireGuard).</li>
+                        <li><strong>Accès autorisé :</strong> VLAN 40 (Active Directory) et VLAN 50 (Management &amp; Sécurité).</li>
+                        <li><strong>Accès interdit :</strong> VLAN 30 (postes clients) — principe du moindre privilège.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Justification</h3>
+                    <p style="font-size:0.9rem; color:#ccc;">Le VPN est réservé aux <strong>administrateurs IT en télétravail</strong> — pas aux agents. Il permet de gérer pfSense, l'AD et Wazuh sans ouvrir RDP/SSH directement depuis Internet. Les agents accèdent au réseau physiquement depuis leurs postes Windows en VLAN 30.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>7. Gestion de Projet</h2>
         <div class="card">
             <ul>
                 <li><strong>Planification :</strong> Méthode Kanban sur <strong>Trello</strong>.</li>
-                <li><strong>Design :</strong> Schématisation sur <strong>Excalidraw</strong>.</li>
+                <li><strong>Design :</strong> Schématisation sur <strong>Excalidraw</strong> (plan d'adressage IP avec passerelles, plages et IPs fixes).</li>
                 <li><strong>Versionning :</strong> Code source sur <strong>GitHub</strong> (Repository privé).</li>
             </ul>
         </div>
