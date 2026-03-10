@@ -43,7 +43,6 @@ exit
 interface ethernet 0/2
  switchport mode access
  switchport access vlan 10
- ! ou 20 si tu préfères web en SERVERS, adapte selon ta topo
  no shutdown
 exit
 
@@ -88,13 +87,6 @@ exit
 ! ---------- POSTES CLIENTS & KALI-LAN ----------
 ! Poste client Windows
 interface ethernet 3/2
- switchport mode access
- switchport access vlan 30
- no shutdown
-exit
-
-! Kali-LAN (attaquant interne)
-interface ethernet 3/3
  switchport mode access
  switchport access vlan 30
  no shutdown
