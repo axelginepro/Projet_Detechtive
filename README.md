@@ -116,7 +116,7 @@ Ce projet met en œuvre une défense en profondeur, du réseau à la couche appl
 * **Authentification Centralisée :** Les utilisateurs sont gérés via l'Active Directory (`detechtive.local` — VLAN 40).
 * **Interopérabilité PHP ↔ SMB :** L'application web ne stocke pas les fichiers localement. Elle s'authentifie dynamiquement sur le File Server via `net use` pour monter les partages sécurisés uniquement le temps de la session.
 
-### 5. Sécurité Applicative (DevSecOps)
+### 5. Sécurité Applicative (AppSec)
 
 * **Upload Sécurisé :**
   * Whitelist d'extensions stricte (jpg, png, pdf, docx...).
