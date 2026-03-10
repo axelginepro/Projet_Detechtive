@@ -268,9 +268,9 @@
         <div class="card">
             <h3>Segmentation réseau — 5 zones de sécurité</h3>
             <p style="font-size:0.88rem; color:#aaa; margin-bottom:16px;">
-                Le <strong>switch IOU (L3)</strong> assure le routage inter-VLAN entre les 5 zones internes (<code>ip routing</code>, SVI par VLAN).
+                Le <strong>switch IOU (L3)</strong> assure le routage inter-VLAN entre les 5 zones internes (<code>ip routing</code>, SVI par VLAN) et porte les passerelles internes.
                 <strong>pfSense</strong> est positionné en coupure entre Internet et le switch : il assure le filtrage périmétrique, le NAT et le VPN.
-                IP LAN pfSense : <code>192.168.10.1/24</code> — IP uplink switch IOU : <code>192.168.10.2</code>.
+                Ils sont interconnectés via un <strong>réseau de transit point-à-point dédié (10.0.0.0/30)</strong> pour isoler le routage interne : pfSense (<code>10.0.0.1</code>) ↔ Switch L3 (<code>10.0.0.2</code>). pfSense utilise des routes statiques pour joindre les VLANs via le switch.
             </p>
             <table class="vlan-table">
                 <thead>
@@ -362,7 +362,7 @@
                 <div class="rule-block">
                     <p><span class="vlan">WAN</span> → <span class="vlan">VLAN 10</span> : <span class="allow">NAT</span> ports 80/443 → <code>192.168.10.10</code></p>
                     <p><span class="vlan">WAN</span> → <span class="vlan">pfSense</span> : <span class="allow">ALLOW</span> UDP 51820 (WireGuard VPN)</p>
-                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> port 3306 uniquement</p>
+                    <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> ports 3306 (DB) &amp; 445 (SMB)</p>
                     <p><span class="vlan">VLAN 10</span> → <span class="vlan">VLAN 40/50</span> : <span class="deny">DENY ALL</span></p>
                     <p><span class="vlan">LAN internes</span> → Internet : <span class="allow">ALLOW</span> sortant (logs Wazuh)</p>
                     <p><span class="vlan">VLAN 50</span> → tous : <span class="allow">READ ONLY</span> (agents Wazuh)</p>
@@ -400,6 +400,7 @@
                         <li><strong>Structure AD :</strong> Organisation par Unités d'Organisation (OU) pour séparer les Agents des Administrateurs.</li>
                         <li><strong>Droits Restreints :</strong> Les utilisateurs standard n'ont aucun droit d'administration sur les serveurs ou les postes de travail.</li>
                         <li><strong>Comptes de Service :</strong> L'application Web utilise un compte AD dédié avec des droits minimaux, uniquement capable d'écrire dans les dossiers de dépôt.</li>
+                        <li><strong>PKI Interne (AD CS) :</strong> Le serveur AD gère l'Autorité de Certification pour chiffrer les flux internes (Web/MariaDB) et distribuer la confiance via GPO.</li>
                     </ul>
                 </div>
                 <div>
@@ -474,10 +475,11 @@
             <div class="card" style="border-left: 5px solid #e74c3c;">
                 <h3>Sécurité Infrastructure</h3>
                 <ul>
-                    <li><strong>Switch IOU (L3) :</strong> Routage inter-VLAN via SVI dédiées — <code>ip routing</code> activé, route par défaut vers pfSense (<code>192.168.10.1</code>).</li>
+                    <li><strong>Switch IOU (L3) :</strong> Routage inter-VLAN via SVI dédiées — <code>ip routing</code> activé, route par défaut vers pfSense (<code>10.0.0.1</code>).</li>
                     <li><strong>Pare-feu pfSense :</strong> Filtrage périmétrique stateful, NAT (Web → <code>192.168.10.10</code>), VPN WireGuard UDP <code>51820</code>. Règles whitelist strictes, aucune règle "any to any".</li>
                     <li><strong>SIEM Wazuh (<code>192.168.10.42</code>) :</strong> Remontée d'alertes en temps réel depuis VLAN 50 dédié, inaccessible depuis la DMZ.</li>
-                    <li><strong>Hardening :</strong> Désactivation des services inutiles, principe du moindre privilège sur tous les comptes.</li>
+                    <li><strong>Traçabilité (Patch Management) :</strong> Les accès Internet pour les mises à jour sont autorisés, mais <strong>intégralement loggués</strong> vers le SIEM pour prévenir toute exfiltration.</li>
+                    <li><strong>Hardening :</strong> Désactivation des services inutiles et isolation physique des ports (VLAN 999 en shutdown). <br><em><span style="color: var(--accent-color);">▶ Perspective d'évolution :</span></em> Déploiement futur du protocole <strong>HSRP/VRRP</strong> pour redonder le switch cœur et éliminer le point de défaillance unique (SPOF).</li>
                 </ul>
             </div>
         </div>
