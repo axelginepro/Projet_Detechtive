@@ -5,7 +5,7 @@
 ![Stack](https://img.shields.io/badge/Tech-GNS3_%7C_PfSense_%7C_Windows_Server_2022-orange?style=for-the-badge)
 
 > **Projet de fin d'études - Certification AIS (Administrateur d'Infrastructures Sécurisées)**
-> *RNCP Niveau 6 - Jedha Bootcamp - 2026*
+> *RNCP Niveau 6*
 
 ---
 
