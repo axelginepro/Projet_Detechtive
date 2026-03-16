@@ -39,6 +39,7 @@
         .trust-medium { background: rgba(230,126,34,0.2); color: #e67e22; }
         .trust-standard { background: rgba(241,196,15,0.2); color: #f1c40f; }
         .trust-critical { background: rgba(155,89,182,0.2); color: #9b59b6; }
+        .trust-backup { background: rgba(92,124,0,0.2); color: #8fb800; }
         .trust-none { background: rgba(100,100,100,0.2); color: #888; }
         .card-img { width: 100%; height: 180px; object-fit: contain; background: #000; border: 1px solid #333; margin-bottom: 10px; cursor: zoom-in; transition: transform 0.2s; border-radius: 4px; }
         .card-img:hover { border-color: var(--accent-color); transform: scale(1.02); }
@@ -53,7 +54,6 @@
         .rule-block p span.deny { color: #e74c3c; font-weight: 600; }
         .rule-block p span.vlan { color: var(--accent-color); }
         .arch-badge { display: inline-block; background: rgba(52,152,219,0.15); border: 1px solid #3498db; color: #3498db; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; font-family: 'Courier New', monospace; }
-        /* Navigation flottante */
         nav.side-nav { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 999; }
         nav.side-nav a { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 10px; font-size: 0.7rem; font-family: 'Courier New', monospace; border-radius: 4px; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
         nav.side-nav a:hover { border-color: var(--accent-color); color: var(--accent-color); }
@@ -77,7 +77,8 @@
     <a href="#backend">4. Backend</a>
     <a href="#securite">5. Sécurité</a>
     <a href="#vpn">6. VPN</a>
-    <a href="#ha">7. Haute Dispo.</a>
+    <a href="#backup">7. Backup</a>
+    <a href="#ha">8. Haute Dispo.</a>
 </nav>
 
 <div class="container">
@@ -92,7 +93,7 @@
             <p><strong>Scénario :</strong> Pilotage d'un projet d'infrastructure global : conception de l'architecture réseau sécurisée et intégration complète de la stack technique (Web, Data, Fichiers) dans une approche <strong>Secure by Design</strong>.</p>
             <ul>
                 <li><strong>Confidentialité :</strong> Chiffrement intégral des flux (HTTPS/SSL), segmentation stricte par VLANs et sécurisation du stockage par cloisonnement.</li>
-                <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau.</li>
+                <li><strong>Disponibilité :</strong> Architecture robuste — grâce au cloisonnement VLAN, la compromission d'un élément ne propage pas l'attaque au reste du réseau. Sauvegardes isolées en VLAN 60 dédié.</li>
                 <li><strong>Traçabilité :</strong> Centralisation des logs (Wazuh SIEM) depuis un VLAN Management dédié et authentification unique (Active Directory).</li>
             </ul>
         </div>
@@ -102,14 +103,14 @@
         <h2>2. Architecture Infrastructure</h2>
 
         <div class="card">
-            <h3>Segmentation réseau — 5 zones de sécurité</h3>
+            <h3>Segmentation réseau — 6 zones de sécurité</h3>
             <div style="margin-bottom:14px;">
                 <span class="arch-badge">&#9654; Architecture : Router-on-a-Stick (802.1Q)</span>
             </div>
             <p style="font-size:0.88rem; color:#aaa; margin-bottom:16px;">
                 Le <strong>switch IOU opère en L2 pur</strong> (commutation uniquement, pas de routage inter-VLAN).
                 <strong>pfSense</strong> centralise l'ensemble du routage, du filtrage et du NAT via
-                <strong>5 sous-interfaces 802.1Q</strong> sur son interface LAN physique.
+                <strong>6 sous-interfaces 802.1Q</strong> sur son interface LAN physique.
                 Un <strong>trunk 802.1Q unique</strong> relie le switch à pfSense — pfSense porte toutes les passerelles VLAN.
             </p>
             <table class="vlan-table">
@@ -170,6 +171,15 @@
                         <td>SIEM Wazuh, Administration réseau</td>
                         <td><span class="trust-badge trust-critical">&#128995; Critique</span></td>
                     </tr>
+                    <tr>
+                        <td><strong>Backup &amp; Restauration</strong></td>
+                        <td><code>60</code></td>
+                        <td><code>192.168.10.48/29</code></td>
+                        <td><code>192.168.10.49</code></td>
+                        <td><code>.50</code> NAS/Backup</td>
+                        <td>NAS/Serveur Backup (BorgBackup)</td>
+                        <td><span class="trust-badge trust-backup">&#128190; Isolé</span></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -189,6 +199,7 @@
                     <li><strong>VLAN 20 :</strong> File Server &amp; BDD, jamais joignables depuis Internet.</li>
                     <li><strong>VLAN 40 :</strong> AD isolé — inaccessible depuis la DMZ par règle pfSense.</li>
                     <li><strong>VLAN 50 :</strong> Wazuh collecte les logs de tous les VLANs.</li>
+                    <li><strong>VLAN 60 :</strong> NAS Backup isolé — reçoit uniquement, n'initie aucune connexion.</li>
                 </ul>
             </div>
             <div class="card">
@@ -203,9 +214,12 @@
                     <p><span class="vlan">WAN</span> &#8594; <span class="vlan">VLAN 10</span> : <span class="allow">NAT</span> ports 80/443 &#8594; <code>.10</code></p>
                     <p><span class="vlan">WAN</span> &#8594; <span class="vlan">pfSense</span> : <span class="allow">ALLOW</span> UDP 51820 (WireGuard)</p>
                     <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 3306 (DB) &amp; 445 (SMB)</p>
-                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 40/50</span> : <span class="deny">DENY ALL</span></p>
+                    <p><span class="vlan">VLAN 10</span> &#8594; <span class="vlan">VLAN 40/50/60</span> : <span class="deny">DENY ALL</span></p>
                     <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 40</span> : <span class="allow">ALLOW</span> 389/636 (LDAP/S)</p>
                     <p><span class="vlan">VLAN 30</span> &#8594; <span class="vlan">VLAN 20</span> : <span class="allow">ALLOW</span> 445 (SMB)</p>
+                    <p><span class="vlan">VLAN 20/40</span> &#8594; <span class="vlan">VLAN 60</span> : <span class="allow">ALLOW</span> backup (unidirectionnel)</p>
+                    <p><span class="vlan">VLAN 60</span> &#8594; <span class="vlan">Tous VLANs</span> : <span class="deny">DENY ALL</span> (passif)</p>
+                    <p><span class="vlan">VLAN 60</span> &#8594; <span class="vlan">VLAN 50</span> : <span class="allow">ALLOW</span> 1514/1515 (logs Wazuh)</p>
                     <p><span class="vlan">LAN internes</span> &#8594; Internet : <span class="allow">ALLOW</span> sortant (loggué SIEM)</p>
                 </div>
             </div>
@@ -300,6 +314,7 @@
                     <li><strong>Pare-feu pfSense :</strong> Routage inter-VLAN centralisé, filtrage stateful et VPN WireGuard.</li>
                     <li><strong>SIEM Wazuh :</strong> Alertes temps réel depuis VLAN 50 dédié — logs unidirectionnels.</li>
                     <li><strong>Hardening :</strong> Désactivation des services inutiles et isolation physique des ports.</li>
+                    <li><strong>VLAN 60 Backup :</strong> NAS isolé, flux entrants uniquement — protection anti-ransomware.</li>
                 </ul>
             </div>
         </div>
@@ -314,20 +329,54 @@
                     <ul>
                         <li><strong>Protocole :</strong> UDP, Port <code>51820</code> sur WAN pfSense.</li>
                         <li><strong>Plage VPN :</strong> <code>10.10.10.0/24</code> (réseau virtuel WireGuard).</li>
-                        <li><strong>Accès autorisé :</strong> VLAN 40 (AD) et VLAN 50 (Management).</li>
+                        <li><strong>Accès autorisé :</strong> VLAN 40 (AD), VLAN 50 (Management) et VLAN 60 (Backup).</li>
                         <li><strong>Accès interdit :</strong> VLAN 10 (DMZ) et VLAN 30 (Clients).</li>
                     </ul>
                 </div>
                 <div>
                     <h3>Justification</h3>
-                    <p style="font-size:0.9rem; color:#ccc;">Le VPN est réservé aux <strong>administrateurs IT en télétravail</strong>. Il permet de gérer pfSense, l'AD et Wazuh sans exposer RDP/SSH directement sur Internet.</p>
+                    <p style="font-size:0.9rem; color:#ccc;">Le VPN est réservé aux <strong>administrateurs IT en télétravail</strong>. Il permet de gérer pfSense, l'AD, Wazuh et le serveur backup sans exposer RDP/SSH directement sur Internet.</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <section id="backup">
+        <h2>7. Sauvegarde &amp; Restauration (VLAN 60)</h2>
+        <div class="card" style="border-left: 5px solid #8fb800;">
+            <div class="grid">
+                <div>
+                    <h3>Architecture Backup</h3>
+                    <ul>
+                        <li><strong>VLAN dédié :</strong> <code>192.168.10.48/29</code> — totalement isolé des autres zones.</li>
+                        <li><strong>NAS/Serveur Backup :</strong> <code>192.168.10.50</code> — BorgBackup ou équivalent.</li>
+                        <li><strong>Sources sauvegardées :</strong> VLAN 20 (Serveurs : File Server + MariaDB) et VLAN 40 (AD).</li>
+                        <li><strong>Supervision :</strong> Logs unidirectionnels vers Wazuh SIEM (<code>192.168.10.42</code>).</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Règles de Sécurité</h3>
+                    <ul>
+                        <li><strong>Flux entrants uniquement :</strong> Le VLAN 60 ne peut initier aucune connexion vers les autres VLANs.</li>
+                        <li><strong>Internet bloqué :</strong> Aucun accès Internet depuis le backup — protection anti-ransomware.</li>
+                        <li><strong>DMZ/Clients bloqués :</strong> VLAN 10 et 30 ne peuvent jamais atteindre le VLAN 60.</li>
+                        <li><strong>Principe 3-2-1 :</strong> Base pour évoluer vers 3 copies, 2 supports, 1 hors-site.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="rule-block" style="margin-top:16px;">
+                <p><span class="vlan">VLAN 20</span> &#8594; <span class="vlan">VLAN 60</span> : <span class="allow">ALLOW</span> backup ports (TCP 9102) — unidirectionnel</p>
+                <p><span class="vlan">VLAN 40</span> &#8594; <span class="vlan">VLAN 60</span> : <span class="allow">ALLOW</span> backup ports (TCP 9102) — unidirectionnel</p>
+                <p><span class="vlan">VLAN 60</span> &#8594; <span class="vlan">VLAN 50</span> : <span class="allow">ALLOW</span> 1514/1515 (logs Wazuh uniquement)</p>
+                <p><span class="vlan">VLAN 60</span> &#8594; <span class="vlan">Tous autres VLANs</span> : <span class="deny">DENY ALL</span></p>
+                <p><span class="vlan">VLAN 10/30</span> &#8594; <span class="vlan">VLAN 60</span> : <span class="deny">DENY ALL</span></p>
+                <p><span class="vlan">VLAN 60</span> &#8594; Internet : <span class="deny">DENY ALL</span> (anti-ransomware)</p>
+            </div>
+        </div>
+    </section>
+
     <section id="ha">
-        <h2>7. Évolutivité &amp; Haute Disponibilité (Redondance)</h2>
+        <h2>8. Évolutivité &amp; Haute Disponibilité (Redondance)</h2>
         <div class="card" style="border-top: 4px solid var(--secondary-accent);">
             <p style="font-size:0.9rem; color:#ccc; margin-bottom:15px;">
                 Pour éliminer les points de défaillance uniques (SPOF) identifiés, les évolutions suivantes sont préconisées pour le futur :
@@ -337,7 +386,7 @@
                     <h4>1. Redondance Firewall (CARP)</h4>
                     <ul>
                         <li><strong>Cluster pfSense :</strong> Mise en place de deux nœuds pfSense en mode Haute Disponibilité.</li>
-                        <li><strong>Protocole CARP :</strong> Utilisation d'IP virtuelles (VIP) flottantes pour les passerelles de chaque VLAN.</li>
+                        <li><strong>Protocole CARP :</strong> Utilisation d'IP virtuelles (VIP) flottantes pour les passerelles de chaque VLAN (y compris VLAN 60).</li>
                         <li><strong>Synchronisation :</strong> Réplication automatique des sessions et de la configuration entre les unités.</li>
                     </ul>
                 </div>

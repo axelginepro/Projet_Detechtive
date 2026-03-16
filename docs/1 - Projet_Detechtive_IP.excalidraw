@@ -59,16 +59,16 @@
       "type": "text",
       "x": 240, "y": 178,
       "width": 460, "height": 85,
-      "text": "pfSense — Pare-feu / NAT / VPN / Router-on-a-Stick\nWAN : IP Opérateur\nSous-interfaces VLAN 10/20/30/40/50 (dot1q trunk)\nDHCP, DNS, Firewall inter-VLAN",
+      "text": "pfSense — Pare-feu / NAT / VPN / Router-on-a-Stick\nWAN : IP Opérateur\nSous-interfaces VLAN 10/20/30/40/50/60 (dot1q trunk)\nDHCP, DNS, Firewall inter-VLAN",
       "fontSize": 12, "textAlign": "center", "verticalAlign": "middle",
       "containerId": "pfsense"
     },
     {
       "id": "trunk_lbl",
       "type": "text",
-      "x": 450, "y": 292,
-      "width": 220, "height": 18,
-      "text": "Trunk 802.1q — VLAN 10,20,30,40,50",
+      "x": 430, "y": 292,
+      "width": 260, "height": 18,
+      "text": "Trunk 802.1q — VLAN 10,20,30,40,50,60",
       "fontSize": 11, "textAlign": "center", "verticalAlign": "middle",
       "strokeColor": "#2f9e44",
       "containerId": null
@@ -77,7 +77,7 @@
       "id": "switch",
       "type": "rectangle",
       "x": 230, "y": 330,
-      "width": 480, "height": 95,
+      "width": 480, "height": 105,
       "strokeColor": "#2f9e44", "backgroundColor": "#ebfbee",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "sw_lbl" }]
@@ -86,16 +86,16 @@
       "id": "sw_lbl",
       "type": "text",
       "x": 240, "y": 338,
-      "width": 460, "height": 80,
-      "text": "IOU — Switch L2 (no ip routing)\nTrunk eth0/0 → pfSense (VLAN 10,20,30,40,50)\nPorts access : eth0/1-2 (VLAN10) | eth1/0-1 (VLAN20)\neth3/2 (VLAN30) | eth0/3 (VLAN40) | eth1/2-3 (VLAN50)\nPorts inutilisés → VLAN 999 (shutdown)",
+      "width": 460, "height": 90,
+      "text": "IOU — Switch L2 (no ip routing)\nTrunk eth0/0 → pfSense (VLAN 10,20,30,40,50,60)\nPorts access : eth0/1-2 (VLAN10) | eth1/0-1 (VLAN20)\neth3/2 (VLAN30) | eth0/3 (VLAN40) | eth1/2-3 (VLAN50)\neth2/0-1 (VLAN60) | Ports inutilisés → VLAN 999 (shutdown)",
       "fontSize": 12, "textAlign": "center", "verticalAlign": "middle",
       "containerId": "switch"
     },
     {
       "id": "dmz",
       "type": "rectangle",
-      "x": -300, "y": 510,
-      "width": 270, "height": 210,
+      "x": -300, "y": 530,
+      "width": 270, "height": 190,
       "strokeColor": "#e67700", "backgroundColor": "#fff9db",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "dmz_lbl" }]
@@ -103,8 +103,8 @@
     {
       "id": "dmz_lbl",
       "type": "text",
-      "x": -290, "y": 518,
-      "width": 250, "height": 200,
+      "x": -290, "y": 538,
+      "width": 250, "height": 180,
       "text": "DMZ — VLAN 10\n192.168.10.0/28\nRéseau : 192.168.10.0\nPasserelle (pfSense) : 192.168.10.1\nPlage : .1 → .14\nBroadcast : 192.168.10.15\n\nServeur Web : 192.168.10.10\nWebterm : 192.168.10.11",
       "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
       "containerId": "dmz"
@@ -112,8 +112,8 @@
     {
       "id": "srv",
       "type": "rectangle",
-      "x": 0, "y": 510,
-      "width": 270, "height": 210,
+      "x": 0, "y": 530,
+      "width": 270, "height": 190,
       "strokeColor": "#862e9c", "backgroundColor": "#f8f0fc",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "srv_lbl" }]
@@ -121,8 +121,8 @@
     {
       "id": "srv_lbl",
       "type": "text",
-      "x": 10, "y": 518,
-      "width": 250, "height": 200,
+      "x": 10, "y": 538,
+      "width": 250, "height": 180,
       "text": "Serveurs internes — VLAN 20\n192.168.10.16/28\nRéseau : 192.168.10.16\nPasserelle (pfSense) : 192.168.10.17\nPlage : .17 → .30\nBroadcast : 192.168.10.31\n\nFile Server : 192.168.10.20\nMariaDB : 192.168.10.21",
       "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
       "containerId": "srv"
@@ -130,8 +130,8 @@
     {
       "id": "cli",
       "type": "rectangle",
-      "x": 300, "y": 510,
-      "width": 270, "height": 210,
+      "x": 300, "y": 530,
+      "width": 270, "height": 190,
       "strokeColor": "#2f9e44", "backgroundColor": "#ebfbee",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "cli_lbl" }]
@@ -139,8 +139,8 @@
     {
       "id": "cli_lbl",
       "type": "text",
-      "x": 310, "y": 518,
-      "width": 250, "height": 200,
+      "x": 310, "y": 538,
+      "width": 250, "height": 180,
       "text": "Postes Clients — VLAN 30\n192.168.10.128/25\nRéseau : 192.168.10.128\nPasserelle (pfSense) : 192.168.10.129\nPlage : .129 → .254\nBroadcast : 192.168.10.255\n\nWorkstations (DHCP) :\n192.168.10.130 → .200",
       "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
       "containerId": "cli"
@@ -148,8 +148,8 @@
     {
       "id": "ad",
       "type": "rectangle",
-      "x": 600, "y": 510,
-      "width": 270, "height": 210,
+      "x": 600, "y": 530,
+      "width": 270, "height": 190,
       "strokeColor": "#c92a2a", "backgroundColor": "#fff5f5",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "ad_lbl" }]
@@ -157,8 +157,8 @@
     {
       "id": "ad_lbl",
       "type": "text",
-      "x": 610, "y": 518,
-      "width": 250, "height": 200,
+      "x": 610, "y": 538,
+      "width": 250, "height": 180,
       "text": "Active Directory — VLAN 40\n192.168.10.32/29\nRéseau : 192.168.10.32\nPasserelle (pfSense) : 192.168.10.33\nPlage : .33 → .38\nBroadcast : 192.168.10.39\n\nSRV-AD01 (DNS) : 192.168.10.34\ndetechtive.local",
       "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
       "containerId": "ad"
@@ -166,8 +166,8 @@
     {
       "id": "mgmt",
       "type": "rectangle",
-      "x": 900, "y": 510,
-      "width": 270, "height": 210,
+      "x": 900, "y": 530,
+      "width": 270, "height": 190,
       "strokeColor": "#1864ab", "backgroundColor": "#e8f4fd",
       "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
       "boundElements": [{ "type": "text", "id": "mgmt_lbl" }]
@@ -175,11 +175,29 @@
     {
       "id": "mgmt_lbl",
       "type": "text",
-      "x": 910, "y": 518,
-      "width": 250, "height": 200,
+      "x": 910, "y": 538,
+      "width": 250, "height": 180,
       "text": "Management & Sécurité — VLAN 50\n192.168.10.40/29\nRéseau : 192.168.10.40\nPasserelle (pfSense) : 192.168.10.41\nPlage : .41 → .46\nBroadcast : 192.168.10.47\n\nSIEM Wazuh : 192.168.10.42\nAdmin réseau : 192.168.10.43",
       "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
       "containerId": "mgmt"
+    },
+    {
+      "id": "backup",
+      "type": "rectangle",
+      "x": 1200, "y": 530,
+      "width": 270, "height": 190,
+      "strokeColor": "#5c7c00", "backgroundColor": "#f4fce3",
+      "fillStyle": "solid", "strokeWidth": 2, "roughness": 1, "opacity": 100,
+      "boundElements": [{ "type": "text", "id": "backup_lbl" }]
+    },
+    {
+      "id": "backup_lbl",
+      "type": "text",
+      "x": 1210, "y": 538,
+      "width": 250, "height": 180,
+      "text": "Backup & Restauration — VLAN 60\n192.168.10.48/29\nRéseau : 192.168.10.48\nPasserelle (pfSense) : 192.168.10.49\nPlage : .50 → .54\nBroadcast : 192.168.10.55\n\nNAS/Serveur Backup : 192.168.10.50",
+      "fontSize": 12, "textAlign": "left", "verticalAlign": "top",
+      "containerId": "backup"
     },
     {
       "id": "a1",
@@ -211,47 +229,56 @@
     {
       "id": "b1",
       "type": "arrow",
-      "x": 320, "y": 425,
-      "width": -455, "height": 85,
-      "points": [[0,0],[-455,85]],
+      "x": 320, "y": 435,
+      "width": -455, "height": 95,
+      "points": [[0,0],[-455,95]],
       "startArrowhead": null, "endArrowhead": "arrow",
       "strokeColor": "#e67700", "strokeWidth": 2
     },
     {
       "id": "b2",
       "type": "arrow",
-      "x": 370, "y": 425,
-      "width": -235, "height": 85,
-      "points": [[0,0],[-235,85]],
+      "x": 370, "y": 435,
+      "width": -235, "height": 95,
+      "points": [[0,0],[-235,95]],
       "startArrowhead": null, "endArrowhead": "arrow",
       "strokeColor": "#862e9c", "strokeWidth": 2
     },
     {
       "id": "b3",
       "type": "arrow",
-      "x": 460, "y": 425,
-      "width": 10, "height": 85,
-      "points": [[0,0],[10,85]],
+      "x": 460, "y": 435,
+      "width": 10, "height": 95,
+      "points": [[0,0],[10,95]],
       "startArrowhead": null, "endArrowhead": "arrow",
       "strokeColor": "#2f9e44", "strokeWidth": 2
     },
     {
       "id": "b4",
       "type": "arrow",
-      "x": 560, "y": 425,
-      "width": 275, "height": 85,
-      "points": [[0,0],[275,85]],
+      "x": 560, "y": 435,
+      "width": 275, "height": 95,
+      "points": [[0,0],[275,95]],
       "startArrowhead": null, "endArrowhead": "arrow",
       "strokeColor": "#c92a2a", "strokeWidth": 2
     },
     {
       "id": "b5",
       "type": "arrow",
-      "x": 600, "y": 425,
-      "width": 535, "height": 85,
-      "points": [[0,0],[535,85]],
+      "x": 600, "y": 435,
+      "width": 535, "height": 95,
+      "points": [[0,0],[535,95]],
       "startArrowhead": null, "endArrowhead": "arrow",
       "strokeColor": "#1864ab", "strokeWidth": 2
+    },
+    {
+      "id": "b6",
+      "type": "arrow",
+      "x": 650, "y": 435,
+      "width": 885, "height": 95,
+      "points": [[0,0],[885,95]],
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#5c7c00", "strokeWidth": 2
     }
   ],
   "appState": {
