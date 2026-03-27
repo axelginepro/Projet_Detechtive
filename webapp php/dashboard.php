@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// --- FORCER L'AFFICHAGE DES ERREURS PHP (MODE DEBUG) ---
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+$debug_log = "<strong>🛠️ TRACE DE DÉBOGAGE SYSTÈME (NET USE) :</strong><br><br>";
+
 // --- 0. CHARGEMENT DE LA SÉCURITÉ ---
 if (!file_exists('config.php')) { die("Erreur critique : config.php manquant."); }
 require_once 'config.php';
@@ -15,6 +22,8 @@ $root_path = "\\\\" . $file_server_name . "\\" . $share_name . "\\";
 $msg_status = "";
 $msg_type = ""; 
 $fs_connected = false;
+
+$debug_log .= "> Chemin UNC cible : <code>" . htmlspecialchars($root_path) . "</code><br>";
 
 /**
  * 2. SÉCURITÉ SESSION
@@ -49,7 +58,6 @@ try {
 
 } catch (Exception $e) {
     // --- TENTATIVE 2 : MODE SECOURS (SANS SSL) ---
-    // Si le SSL échoue, on essaie sans SSL pour ne pas bloquer l'application
     try {
         $dsn = "mysql:host=" . DB_SERVER . ";dbname=" . DB_NAME . ";charset=utf8";
         $pdo = new PDO($dsn, DB_USERNAME, DB_PASSWORD, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
@@ -67,7 +75,6 @@ $ssl_color = "#e74c3c"; // Rouge par défaut
 
 if ($db_online) {
     try {
-        // On demande à la BDD quel est le chiffrement actif pour cette session
         $stmt = $pdo->query("SHOW SESSION STATUS LIKE 'Ssl_cipher'");
         $status = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -143,15 +150,24 @@ $user_fs = defined('FS_USER') ? FS_USER : "Administrator";
 $pass_fs = defined('FS_PASS') ? FS_PASS : "";
 
 // Connexion réseau (UNC)
-@exec("net use * /delete /y");
+@exec("net use * /delete /y 2>&1");
 $share_root_cmd = "\\\\" . $file_server_name . "\\" . $share_name; 
 $cmd_auth = 'net use "' . $share_root_cmd . '" /user:"' . $user_fs . '" "' . $pass_fs . '"';
+
+$debug_log .= "> Commande SMB exécutée : <code>" . htmlspecialchars($cmd_auth) . "</code><br>";
+
+// Exécution de la commande et capture de la sortie système
 exec($cmd_auth . " 2>&1", $output, $return_var); 
 
-// FIX : Initialisation de la variable pour éviter l'erreur si la condition is_dir est fausse.
+$debug_log .= "> Code de retour Windows : <strong>" . $return_var . "</strong> <br>";
+$debug_log .= "> Sortie console Windows : <strong>" . htmlspecialchars(implode(" | ", $output)) . "</strong><br>";
+
 $current_view = ""; 
 
+$debug_log .= "> Résultat de is_dir() : ";
+
 if (is_dir($root_path)) {
+    $debug_log .= "<strong>TRUE (Dossier accessible ✅)</strong><br>";
     $fs_connected = true;
     if ($my_team_path_relative && is_dir($root_path . $my_team_path_relative)) {
         $current_view = $my_team_path_relative;
@@ -165,7 +181,10 @@ if (is_dir($root_path)) {
             }
         }
     }
-} else { $fs_connected = false; }
+} else { 
+    $debug_log .= "<strong>FALSE (PHP n'a pas accès au dossier ❌)</strong><br>";
+    $fs_connected = false; 
+}
 
 /**
  * 7. UPLOAD SÉCURISÉ
@@ -236,11 +255,17 @@ if ($fs_connected && $view_to_show && is_dir($root_path . $view_to_show)) {
         .text-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
         .text-modal-content { background: #000; color: #0f0; border: 2px solid #0f0; width: 80%; max-width: 800px; height: 70%; padding: 20px; overflow: auto; font-family: 'Courier New', monospace; white-space: pre-wrap; }
         .alert-success { background-color: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; border-left: 5px solid #2ecc71; color: #2ecc71; padding: 15px; margin-bottom: 25px; }
+        .debug-box { background-color: #f1c40f; color: #2c3e50; padding: 15px; margin-bottom: 20px; font-family: monospace; border-left: 5px solid #e67e22; word-wrap: break-word; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        
+        <div class="debug-box">
+            <?php echo $debug_log; ?>
+        </div>
+
         <?php if($msg_status): ?>
             <div class="<?php echo ($msg_type === 'error') ? 'alert-error' : 'alert-success'; ?>">
                 <?php echo $msg_status; ?>
