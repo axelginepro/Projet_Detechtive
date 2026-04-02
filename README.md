@@ -44,7 +44,7 @@ Le réseau est cloisonné en **6 zones de sécurité** indépendantes, chacune a
 - **VLAN 50 (Wazuh) :** Collecte les logs de tous les VLANs en lecture seule (ports `1514/1515`). Aucun flux entrant depuis la DMZ n'est autorisé vers ce VLAN.
 - **VLAN 60 (Backup) :** Zone passive — reçoit les sauvegardes depuis VLAN 20 (Serveurs) et VLAN 40 (AD) sur port `9102/TCP` uniquement. **Aucun flux sortant autorisé** (sauf logs vers Wazuh). Accès Internet bloqué (protection anti-ransomware).
 - **LAN internes → Internet :** ALLOW sortant, logs activés et envoyés vers Wazuh (VLAN 50).
-- **WAN entrant :** Seuls les ports `80/443` (NAT vers `192.168.10.10`) et `51820/UDP` (VPN WireGuard admin) sont ouverts. Tout le reste est BLOCK/DROP avec log vers Wazuh.
+- **WAN entrant :** Seuls les ports `80/443` (NAT vers `192.168.10.10`) et `51820/UDP` (VPN WireGuard — tunnels admin & développeurs) sont ouverts. Tout le reste est BLOCK/DROP avec log vers Wazuh.
 - Le poste **Kali Linux** est positionné avant pfSense (zone WAN) pour simuler un attaquant externe réaliste sans accès au réseau interne.
 
 ### 📸 Vue Logique (GNS3)
@@ -119,12 +119,14 @@ Ce projet met en œuvre une défense en profondeur, du réseau à la couche appl
   * *Détail technique :* Utilisation de `PDO::MYSQL_ATTR_SSL_CA` pointant vers le certificat CA (`ca-cert.pem`) pour prévenir les attaques Man-in-the-Middle.
 * **Vérification Active :** Le dashboard affiche en temps réel le statut du chiffrement SQL (`Ssl_cipher`).
 
-### 4. VPN WireGuard (Accès Admin Distant)
+### 4. VPN WireGuard (Deux tunnels distincts)
 
 * **Protocole :** UDP, Port `51820` sur l'interface WAN de pfSense.
 * **Plage VPN :** `10.10.10.0/24` (réseau virtuel WireGuard) — IP tunnel pfSense : `10.10.10.1`.
-* **Règles :** Les IP VPN peuvent accéder au VLAN 40 (AD), VLAN 50 (Management) et VLAN 60 (Backup — gestion administrative). L'accès direct au VLAN 30 (postes clients) est interdit.
-* **Justification :** Administration distante sécurisée, sans ouvrir RDP/SSH directement depuis Internet.
+* **Tunnel Administrateurs :** Accès aux VLAN 40 (AD), VLAN 50 (Management) et VLAN 60 (Backup). Réservé aux administrateurs système pour gérer pfSense, l'AD, Wazuh et les sauvegardes sans exposer RDP/SSH.
+* **Tunnel Développeurs :** Accès aux VLAN 10 (DMZ — serveur web) et VLAN 20 (Serveurs internes — MariaDB, File Server). Permet les déploiements et la maintenance applicative sans droits d'administration infrastructure.
+* **Règle commune :** Le VLAN 30 (postes clients) est inaccessible depuis les deux tunnels.
+* **Justification :** Séparation des profils d'accès selon le principe du moindre privilège — les développeurs n'accèdent pas aux zones d'administration, et les administrateurs n'ont pas accès aux ressources applicatives en dehors de leur périmètre.
 
 ### 5. Gestion des Identités & Interopérabilité
 
